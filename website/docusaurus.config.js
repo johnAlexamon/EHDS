@@ -105,6 +105,7 @@ const config = {
               {label: 'Implementation Timeline', to: '/implementation-timeline'},
               {label: 'Finland', to: '/finland'},
               {label: 'Gateway Market & API Status', to: '/gateway-market-and-api-status'},
+              {label: 'API Drafts & Specifications', to: '/api-drafts-and-specifications'},
             ],
           },
           {

@@ -101,7 +101,7 @@ The pattern suggests EMR/HIS vendors with a substantial existing public hospital
 
 ## Standards status: is the EEHRxF finalized?
 
-**No.** The European Electronic Health Record Exchange Format (EEHRxF) is **not yet finalized**. "The EEHRxF will become formally established by March 2027. Until then, the European EEHRxF is still under collaborative development, and certainty about its specifications cannot be provided before the formal publication of the Implementing Acts by the European Commission" — [Frontiers in Medicine policy brief, "Accelerating European electronic health record exchange format (EEHRxF) implementation across Europe: a policy perspective," published 9 September 2025](https://pubmed.ncbi.nlm.nih.gov/40995096/).
+**No.** The European Electronic Health Record Exchange Format (EEHRxF) is **not yet finalized** — but see [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md) for the actual draft FHIR Implementation Guides, package IDs/versions, and real example resources, read directly from the source repositories rather than search synthesis. "The EEHRxF will become formally established by March 2027. Until then, the European EEHRxF is still under collaborative development, and certainty about its specifications cannot be provided before the formal publication of the Implementing Acts by the European Commission" — [Frontiers in Medicine policy brief, "Accelerating European electronic health record exchange format (EEHRxF) implementation across Europe: a policy perspective," published 9 September 2025](https://pubmed.ncbi.nlm.nih.gov/40995096/).
 
 Multiple tracks are contributing to the eventual specification, none of them yet final or officially adopted as *the* EEHRxF:
 
