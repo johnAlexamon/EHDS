@@ -5,7 +5,8 @@ Hospital Information Systems (HIS) / EMR / EHR vendors and healthcare providers
 need to do to integrate — in Finland and other EU member states — and on the
 market for gateway/integration components that connect legacy systems to EHDS.
 
-**Start here: [docs/ehds-integration/README.md](docs/ehds-integration/README.md)**
+**Published site: https://johnalexamon.github.io/EHDS/**
+(Source: [docs/ehds-integration/index.md](docs/ehds-integration/index.md))
 
 ## Contents
 

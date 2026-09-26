@@ -1,6 +1,6 @@
 # Finland
 
-Finland is repeatedly described in the underlying research as one of the EU's most EHDS-ready member states, largely because its national digital-health backbone already delivers much of what EHDS requires EU-wide. This file covers Finland's infrastructure, authorities, vendor landscape, and what remains to be done. See the [README](README.md) for methodology caveats — direct fetches of kanta.fi, thl.fi, stm.fi, findata.fi, valtioneuvosto.fi and related domains were blocked during research, so findings rely on search-engine synthesis of these sources.
+Finland is repeatedly described in the underlying research as one of the EU's most EHDS-ready member states, largely because its national digital-health backbone already delivers much of what EHDS requires EU-wide. This file covers Finland's infrastructure, authorities, vendor landscape, and what remains to be done. See the [overview](index.md) for methodology caveats — direct fetches of kanta.fi, thl.fi, stm.fi, findata.fi, valtioneuvosto.fi and related domains were blocked during research, so findings rely on search-engine synthesis of these sources.
 
 ## Kanta: the national backbone
 

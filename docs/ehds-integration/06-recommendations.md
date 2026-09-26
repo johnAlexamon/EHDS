@@ -1,6 +1,6 @@
 # Recommendations for a prospective EHDS gateway/integration vendor
 
-This file translates the findings in the preceding five files into practical guidance for someone evaluating whether to build an EHDS gateway/integration product. It is analysis and synthesis built on the sourced facts documented elsewhere in this folder — it does not introduce new factual claims beyond what is cited in [01](01-legal-and-technical-framework.md)–[05](05-gateway-market-and-api-status.md). Treat this file as a strategic opinion informed by the evidence, not as independently verified fact, and re-read the "Methodology & confidence notes" in the [README](README.md) before acting on it.
+This file translates the findings in the preceding five files into practical guidance for someone evaluating whether to build an EHDS gateway/integration product. It is analysis and synthesis built on the sourced facts documented elsewhere in this folder — it does not introduce new factual claims beyond what is cited in [01](01-legal-and-technical-framework.md)–[05](05-gateway-market-and-api-status.md). Treat this file as a strategic opinion informed by the evidence, not as independently verified fact, and re-read the "Methodology & confidence notes" in the [overview](index.md) before acting on it.
 
 ## Market timing view
 

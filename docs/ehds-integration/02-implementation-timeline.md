@@ -1,6 +1,6 @@
 # Implementation timeline
 
-This file lays out when EHDS obligations become mandatory. See the [README](README.md) for methodology caveats. As noted throughout, **direct WebFetch access to eur-lex.europa.eu and most law-firm/industry sites was blocked** during research; all dates below are drawn from WebSearch-tool summaries of secondary/tertiary sources (including quoted snippets purporting to reflect Article 105's text), not independently verified primary-text reads. A follow-up verification pass against the consolidated EUR-Lex text ([https://eur-lex.europa.eu/eli/reg/2025/327/oj/eng](https://eur-lex.europa.eu/eli/reg/2025/327/oj/eng)) is recommended before relying on any specific date or article number.
+This file lays out when EHDS obligations become mandatory. See the [overview](index.md) for methodology caveats. As noted throughout, **direct WebFetch access to eur-lex.europa.eu and most law-firm/industry sites was blocked** during research; all dates below are drawn from WebSearch-tool summaries of secondary/tertiary sources (including quoted snippets purporting to reflect Article 105's text), not independently verified primary-text reads. A follow-up verification pass against the consolidated EUR-Lex text ([https://eur-lex.europa.eu/eli/reg/2025/327/oj/eng](https://eur-lex.europa.eu/eli/reg/2025/327/oj/eng)) is recommended before relying on any specific date or article number.
 
 ## Summary table
 

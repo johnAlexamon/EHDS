@@ -1,6 +1,6 @@
 # Other member states: a comparative view
 
-This file compares EHDS readiness and gateway architecture across nine member states beyond Finland: Germany, France, Estonia, the Netherlands, Austria, Denmark, Sweden, Italy and Spain. See the [README](README.md) for methodology caveats — WebFetch access to most government and industry domains was blocked during research, so findings rely on search-engine synthesis rather than direct verification.
+This file compares EHDS readiness and gateway architecture across nine member states beyond Finland: Germany, France, Estonia, the Netherlands, Austria, Denmark, Sweden, Italy and Spain. See the [overview](index.md) for methodology caveats — WebFetch access to most government and industry domains was blocked during research, so findings rely on search-engine synthesis rather than direct verification.
 
 ## Germany
 
