@@ -1,6 +1,29 @@
+---
+sidebar_position: 2
+sidebar_label: Implementation Timeline
+---
+
 # Implementation timeline
 
 This file lays out when EHDS obligations become mandatory. See the [overview](index.md) for methodology caveats. As noted throughout, **direct WebFetch access to eur-lex.europa.eu and most law-firm/industry sites was blocked** during research; all dates below are drawn from WebSearch-tool summaries of secondary/tertiary sources (including quoted snippets purporting to reflect Article 105's text), not independently verified primary-text reads. A follow-up verification pass against the consolidated EUR-Lex text ([https://eur-lex.europa.eu/eli/reg/2025/327/oj/eng](https://eur-lex.europa.eu/eli/reg/2025/327/oj/eng)) is recommended before relying on any specific date or article number.
+
+## Timeline at a glance
+
+```mermaid
+timeline
+    title EHDS Regulation (EU) 2025/327 — phased application
+    2025-03-05 : Published in the Official Journal
+    2025-03-26 : Enters into force ⚠️ (25/26 March conflict in sources)
+    2026-04-07 : EHDS Board established (Reg. 2026/771)
+    2026-09-18 : MyHealth@EU implementing regulation adopted (Reg. 2026/2083)
+    2026-10-11 : HealthDCAT-AP implementing regulation in force (Reg. 2026/2098)
+    2027-03-26 : General application — HDABs designated, Annex II common specifications due
+    2029-03-26 : Priority Category 1 live (patient summaries, ePrescriptions) : Chapter IV secondary use applies for most categories
+    2031-03-26 : Priority Category 2 live (imaging, lab results, discharge reports) : Chapter III EHR-systems-in-service mandatory : remaining secondary-use categories (e.g. genomic)
+    2035-03-26 : Article 75(5) — third countries may join HealthData@EU
+```
+
+*Diagram summarizes the [summary table](#summary-table) below; see that table and the [Sources](#sources) section for citations on each date.*
 
 ## Summary table
 

@@ -1,3 +1,9 @@
+---
+slug: /
+sidebar_position: 0
+sidebar_label: Overview
+---
+
 # EHDS integration for HIS/EMR systems: overview
 
 This folder documents what the EU's European Health Data Space Regulation — [Regulation (EU) 2025/327](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32025R0327) — requires of Hospital Information Systems (HIS), Electronic Medical Record (EMR) and Electronic Health Record (EHR) vendors and the healthcare providers who run them, with a specific focus on Finland and a comparative view of eight other EU member states. It also assesses whether a commercial market exists for EHDS gateway/integration components, who is likely to build and operate those gateways country by country, and whether the underlying technical APIs (the European Electronic Health Record Exchange Format, or EEHRxF) are settled or still being specified. The Regulation entered into force on 26 March 2025 and phases in obligations through 2027, 2029, 2031 and 2035; as of this research (September 2026), most of the governance bodies are being stood up but the core technical specifications are not yet finalized, which is the central fact shaping the market and integration picture described here.

@@ -1,3 +1,8 @@
+---
+sidebar_position: 4
+sidebar_label: Other Member States
+---
+
 # Other member states: a comparative view
 
 This file compares EHDS readiness and gateway architecture across nine member states beyond Finland: Germany, France, Estonia, the Netherlands, Austria, Denmark, Sweden, Italy and Spain. See the [overview](index.md) for methodology caveats — WebFetch access to most government and industry domains was blocked during research, so findings rely on search-engine synthesis rather than direct verification.
@@ -118,6 +123,29 @@ Multiple independent assessments agree EHDS readiness is highly uneven and **no 
 - Formal national readiness assessments exist elsewhere too — Ireland's HIQA published one specifically on Ireland's EHDS readiness ([HIQA](https://www.hiqa.ie/hiqa-news-updates/new-hiqa-report-assesses-irelands-readiness-european-health-data-space-regulation)), and academic literature exists for Poland ("Is Poland ready for the European health data space?", [ScienceDirect](https://www.sciencedirect.com/science/article/pii/S2211883726000158)) — illustrating this is a recognized national governance step beyond the nine countries covered here.
 
 **Gateway architecture**: The European Commission's **HealthData@EU** central platform, released as open source in March 2025, provides "a catalogue, gateway services, and interoperability components for the secondary use of health data across Member States" ([Better](https://www.better.care/blog-en/ehds-infrastructure-platforms/)). The same source describes an emerging pattern: "a consistent architectural pattern is emerging: national EHDS infrastructure layers that sit between clinical systems and the European MyHealth@EU infrastructure," arguing this "national layer absorbs the complexity that EHR vendors cannot realistically handle on their own" (industry-vendor commentary — a description of a trend/argument, not an official EU architectural mandate).
+
+The chart below is this report's own qualitative synthesis of the country sections above — **not an official EU ranking** (none was found in the research; see the caveat at the end of this section):
+
+```mermaid
+quadrantChart
+    title EHDS readiness vs. gateway centralization (qualitative synthesis, not an official EU ranking)
+    x-axis Vendor/region-fragmented --> Centralized national gateway
+    y-axis Lower institutional readiness --> Higher institutional readiness
+    quadrant-1 Centralized and ready
+    quadrant-2 Fragmented but ready
+    quadrant-3 Fragmented and building
+    quadrant-4 Centralized but building
+    Finland: [0.85, 0.9]
+    Austria: [0.8, 0.8]
+    Denmark: [0.85, 0.8]
+    Estonia: [0.75, 0.75]
+    France: [0.7, 0.55]
+    Germany: [0.45, 0.55]
+    Netherlands: [0.4, 0.5]
+    Sweden: [0.45, 0.45]
+    Italy: [0.55, 0.35]
+    Spain: [0.3, 0.3]
+```
 
 Synthesizing the country sections: the clearest evidence of a **government-built, centrally-run national gateway/interoperability layer** (rather than leaving integration to individual hospitals or vendors) is found in **Austria** (ELGA/ELGA GmbH plus AT-eHDSI), **Denmark** (Sundhedsdatastyrelsen/soon Digital Health Denmark), **Estonia** (X-Road as a foundational state-run federated layer), **France** (DNS/CNAM-run Mon espace santé plus centralized Health Data Hub), and **Italy** (INI plus FSE 2.0 Gateway, notwithstanding regional execution gaps). **Germany** and the **Netherlands** show more of a hybrid pattern — new legal/institutional scaffolding (FDZ Gesundheit/gematik in Germany; the proposed GDA in the Netherlands) is being built specifically because interoperability has historically been more vendor- and region-fragmented (multiple competing hospital-IT vendors in Germany; MedMij/PGO ecosystem plus direct vendor-to-vendor deals like ChipSoft–Epic in the Netherlands).
 

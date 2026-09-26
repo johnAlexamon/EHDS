@@ -1,8 +1,43 @@
+---
+sidebar_position: 5
+sidebar_label: Gateway Market & API Status
+---
+
 # Gateway market and API status
 
 This file addresses the market-opportunity question directly: how does the MyHealth@EU/NCPeH architecture work today, who is likely to build and operate the connecting gateways, what vendor activity is actually confirmed vs. speculative, and — critically — are the underlying technical APIs (EEHRxF) decided, or still being specified, and by whom?
 
 > ⚠️ **Source-quality note carried over from the underlying research**: A significant number of primary sources (streetinsider.com, newswire.com, pharmiweb.com, globeandmail.com, financialcontent.com, globenewswire.com, streamlex.eu, better.care) were blocked by the research environment's network egress proxy and could not be fetched directly. Findings below that derive from these sources are based on search-engine-synthesized snippets, not direct reads, and are flagged accordingly.
+
+## Architecture at a glance
+
+```mermaid
+flowchart LR
+    subgraph Hospital["Hospital / provider"]
+        HIS["HIS / EMR / EHR system"]
+    end
+
+    subgraph National["National layer (one per Member State)"]
+        Gateway["National gateway / hub<br/>e.g. Finland's Kanta"]
+        NCPeH["NCPeH<br/>primary-use contact point"]
+        HDAB["HDAB<br/>secondary-use access body"]
+    end
+
+    subgraph EU["EU layer"]
+        MyHealthEU["MyHealth@EU<br/>central services"]
+        HealthDataEU["HealthData@EU<br/>central platform"]
+    end
+
+    HIS -->|"patient summary, ePrescription,<br/>imaging, labs, discharge report"| Gateway
+    Gateway --> NCPeH
+    Gateway --> HDAB
+    NCPeH <-->|"EEHRxF-formatted exchange"| MyHealthEU
+    HDAB <-->|"data permits, secure<br/>processing environments"| HealthDataEU
+    MyHealthEU <-.->|"cross-border care"| OtherNCPeH["Other Member States'<br/>NCPeH"]
+    HealthDataEU <-.->|"research / policy access"| OtherHDAB["Other Member States'<br/>HDABs"]
+```
+
+*One national-monopoly gateway per country connects local HIS/EMR systems to both EU tracks — see [confirmed vs. speculative vendor activity](#confirmed-vs-speculative-vendor-activity) below for who builds the gateway itself.*
 
 ## How MyHealth@EU/NCPeH is architected today
 

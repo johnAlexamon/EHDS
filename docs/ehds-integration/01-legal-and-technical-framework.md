@@ -1,3 +1,8 @@
+---
+sidebar_position: 1
+sidebar_label: Legal & Technical Framework
+---
+
 # Legal and technical framework
 
 This file summarizes what Regulation (EU) 2025/327 (the European Health Data Space, "EHDS") requires of EHR/HIS systems and the organizations that build, sell, and operate them. See the [overview](index.md) for methodology and confidence caveats — in short, EUR-Lex and most primary sources could not be directly fetched during research, so most claims below are search-engine-synthesized summaries rather than verified quotations, and exact article numbers should be checked against [EUR-Lex CELEX:32025R0327](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32025R0327) before being relied on.
