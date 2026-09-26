@@ -21,6 +21,8 @@ Every acronym and specialist term used across this documentation set, defined in
 
 **eHDSI** (eHealth Digital Service Infrastructure) — The predecessor name for what is now branded **MyHealth@EU**; you'll still see "eHDSI" in older sources and some technical documentation. See [05](05-gateway-market-and-api-status.md).
 
+**epSOS** (Smart Open Services for European Patients) — The 2008–2014 EU pilot project that built the first operational cross-border Patient Summary/ePrescription services on HL7 CDA; its output became the technical foundation eHDSI/MyHealth@EU went live with from 2019, and which the live NCPeH network (OpenNCP) still runs on today. See [01](01-legal-and-technical-framework.md), [05](05-gateway-market-and-api-status.md).
+
 **GDPR** (General Data Protection Regulation) — The EU's general data protection law. EHDS operates *alongside* GDPR, not instead of it — EHDS's own opt-out right for secondary use is explicitly a separate, distinct right from the GDPR right to object. See [01](01-legal-and-technical-framework.md).
 
 **HDAB** (Health Data Access Body) — The national body each Member State must designate to receive and process secondary-use data access requests (research, policy-making, etc.) and issue data permits. Finland's presumed HDAB candidate is Findata. See [01](01-legal-and-technical-framework.md), [03](03-finland.md), [04](04-other-member-states.md).
@@ -44,6 +46,8 @@ Every acronym and specialist term used across this documentation set, defined in
 ## Standards, protocols and technical specifications
 
 **CEN / CENELEC** (European Committee for Standardization / European Committee for Electrotechnical Standardization) — The EU's formal standardization bodies; CEN/TC 251 is the technical committee for health informatics. No EHDS-specific standardization mandate was confirmed by name in this research. See [05](05-gateway-market-and-api-status.md).
+
+**CDA** (Clinical Document Architecture) — The older HL7 document standard (pre-FHIR) that today's live, operational NCPeH network exchanges Patient Summaries and ePrescriptions in — as opposed to the newer FHIR-based formats described in [06](06-api-drafts-and-specifications.md), which are drafted but not yet live. See [05](05-gateway-market-and-api-status.md).
 
 **CI-build** — "Continuous integration build" — the least stable state a FHIR Implementation Guide can be in: the live, unballoted tip of the source repository, not yet through any formal review. Most of the HL7 Europe content IGs are at this stage. See [06](06-api-drafts-and-specifications.md).
 
@@ -78,6 +82,8 @@ Every acronym and specialist term used across this documentation set, defined in
 **LOINC** (Logical Observation Identifiers Names and Codes) — A coding system for identifying clinical observations and document sections (used throughout the example Patient Summary in [06](06-api-drafts-and-specifications.md) to code sections like "medications" or "allergies").
 
 **MADO** (Manifest-based Access to DICOM Objects) — The IHE Radiology profile created specifically because of EHDS's imaging-sharing requirement; a governance/manifest layer sitting on top of DICOMweb's WADO-RS. See [06](06-api-drafts-and-specifications.md).
+
+**OpenNCP** — The European Commission (DG SANTE)-backed open-source reference implementation of the NCPeH, built on SOAP/XCA and CDA (the older generation, predating the new FHIR drafts). Real national NCPeH implementations (e.g. Denmark's, MIT-licensed) are built directly on it. See [05](05-gateway-market-and-api-status.md).
 
 **MHD** (Mobile access to Health Documents) — An IHE profile for document-style query/retrieve over FHIR; the primary pattern the draft EU Health Data API uses for pulling documents like a Patient Summary. See [06](06-api-drafts-and-specifications.md).
 
