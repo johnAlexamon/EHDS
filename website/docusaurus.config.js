@@ -107,6 +107,7 @@ const config = {
               {label: 'Gateway Market & API Status', to: '/gateway-market-and-api-status'},
               {label: 'API Drafts & Specifications', to: '/api-drafts-and-specifications'},
               {label: 'Cross-Border Exchange', to: '/cross-border-exchange'},
+              {label: 'Vendor Checklist', to: '/vendor-checklist'},
               {label: 'Glossary', to: '/glossary'},
             ],
           },
