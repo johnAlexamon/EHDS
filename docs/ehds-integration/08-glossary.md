@@ -35,6 +35,8 @@ Every acronym and specialist term used across this documentation set, defined in
 
 **MyHealth@EU** — The EU's cross-border digital health infrastructure for *primary use* (direct patient care) — the successor branding for eHDSI. Architected as one national gateway (NCPeH) per Member State connecting to shared EU central services. See [05](05-gateway-market-and-api-status.md), [06](06-api-drafts-and-specifications.md).
 
+**NCP-A / NCP-B** — In the epSOS/eHDSI cross-border workflow, the two NCPeH roles in any given exchange: **NCP-A** is the patient's **country of affiliation** (their home country, which holds the data), **NCP-B** is the **country of treatment** (where the patient currently is). See [05](05-gateway-market-and-api-status.md).
+
 **NCPeH** (National Contact Point for eHealth) — The single national gateway each Member State operates to connect its own health system to MyHealth@EU. Finland's NCPeH function is operated by Kela via Kanta. See [03](03-finland.md), [05](05-gateway-market-and-api-status.md), [06](06-api-drafts-and-specifications.md).
 
 **Priority category** — One of the specific types of health data EHDS lists in Annex I as subject to mandatory cross-border exchange: patient summaries, ePrescriptions/eDispensations, lab results, medical imaging/reports, and hospital discharge reports. Rolled out in two tranches (2029, 2031). See [02](02-implementation-timeline.md).
@@ -103,7 +105,9 @@ Every acronym and specialist term used across this documentation set, defined in
 
 **WADO-RS** (Web Access to DICOM Objects by RESTful Services) — The DICOMweb transaction for retrieving actual image data; still the underlying retrieval mechanism even under the newer MADO profile. See [06](06-api-drafts-and-specifications.md).
 
-**XCA** (Cross-Community Access) — An older IHE profile for querying documents across independent "communities" (e.g. regions or countries) that don't share a common patient ID scheme; named in this research as a pattern common to countries with existing national document-repository infrastructure. See [06](06-api-drafts-and-specifications.md).
+**XCA** (Cross-Community Access) — An older IHE profile for querying (transaction **ITI-38**) and retrieving (transaction **ITI-39**) documents across independent "communities" (e.g. regions or countries) that don't share a common patient ID scheme. This is what today's live NCP-to-NCP Patient Summary exchange actually runs on. See [05](05-gateway-market-and-api-status.md), [06](06-api-drafts-and-specifications.md).
+
+**XCPD** (Cross-Community/Cross-Gateway Patient Discovery) — The IHE profile used by the epSOS **Identification Service** to match a patient's identity across two countries' systems before any data is requested. See [05](05-gateway-market-and-api-status.md).
 
 **XDS** (Cross-Enterprise Document Sharing) — An older IHE profile for sharing documents within a single community/region via a shared repository/registry; the architecture pattern Finland's Kanta and similar national systems resemble. See [06](06-api-drafts-and-specifications.md).
 

@@ -71,6 +71,67 @@ Both repositories are directly browsable, actively-committed public code (Denmar
 
 > ⚠️ **Unverified / conflicting sources**: The exact current OpenNCP license could not be independently confirmed (EUPL is the consistently-reported answer via search synthesis, but the canonical `code.europa.eu` repository itself could not be directly fetched to verify). The live-country list above is search-synthesized from sources not directly fetched and may already be stale given the pace of 2025–2026 rollout activity — verify current status directly at the European Commission's [electronic cross-border health services page](https://health.ec.europa.eu/ehealth-digital-health-and-care/digital-health-and-care/electronic-cross-border-health-services_en) before relying on it. No source found in this research confirms whether/when the live SOAP/CDA-generation NCPeH network will be upgraded to the FHIR-based EEHRxF generation described in [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md) — whether that will be a wholesale replacement, a dual-running transition period, or a version bump within the same OpenNCP codebase is not addressed in any source found.
 
+### How the live cross-border Patient Summary and ePrescription exchange actually works
+
+This is the mechanics of the epSOS/eHDSI-generation flow described above — the thing that's actually running today, using the real named services and IHE transactions from the specification. Two roles recur throughout: **NCP-A**, the National Contact Point of the patient's **country of affiliation** (their home country, which holds the data), and **NCP-B**, the NCP of the **country of treatment** (where the patient currently is). Confirmed via search-engine synthesis of the official [epSOS specification wiki](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_National_Contact_Points) (Fraunhofer-hosted; not directly fetchable in this environment) and related sources:
+
+- **Patient identification** uses the epSOS **Identification Service** (`findEntityByTraits()`), which conforms to the **IHE XCPD** (Cross-Gateway Patient Discovery) profile — NCP-B asks NCP-A "does a patient matching these demographic traits exist in your system?"
+- **Consent is mandatory and captured in Country B**, at the point of care, before any data can be disclosed — either as fresh, encounter-specific consent, or as a prior general consent the patient already gave, reconfirmed on-site. NCP-A verifies that valid consent exists before releasing anything.
+- **Patient Summary retrieval** uses the **IHE XCA** (Cross-Community Access) profile's two-step pattern: a **Cross-Gateway Query (ITI-38)** — "what documents are available?" — followed by a **Cross-Gateway Retrieve (ITI-39)** — "send me that specific document."
+- **ePrescription retrieval** uses the epSOS **Order Service**; the returned eDispensation confirmation uses the **Dispensation Service**.
+- In both cases, **NCP-A transcodes and translates the content into Country B's code systems and language before sending it** — semantic and linguistic translation happens at the source, not the destination.
+- **eDispensation flows the opposite direction**: once the pharmacist in Country B dispenses the medicine, that fact is sent back to NCP-A, which updates the patient's home record — this is what stops the same prescription being dispensed twice.
+
+```mermaid
+sequenceDiagram
+    actor Patient
+    participant HP as Healthcare professional<br/>(pharmacist/clinician, Country B)
+    participant NCPB as NCP-B<br/>(Country of Treatment)
+    participant NCPA as NCP-A<br/>(Country of Affiliation)
+    participant NatA as Country A national infra<br/>(e.g. Finland's Kanta)
+
+    Patient->>HP: Presents for care,<br/>gives national ID / eHIC
+    HP->>NCPB: Requests cross-border access
+
+    rect rgb(240,240,255)
+    Note over HP,NatA: Identification and consent (shared preamble)
+    NCPB->>NCPA: Identification Service:<br/>findEntityByTraits (IHE XCPD)
+    NCPA->>NatA: Match patient demographics
+    NatA-->>NCPA: Candidate match
+    NCPA-->>NCPB: Patient identified
+    HP->>NCPB: Patient gives or confirms<br/>consent at point of care
+    NCPB->>NCPA: Consent asserted
+    end
+
+    rect rgb(235,250,235)
+    Note over HP,NatA: Patient Summary (read only)
+    NCPB->>NCPA: XCA Cross-Gateway Query (ITI-38):<br/>which documents exist?
+    NCPA->>NatA: Retrieve Patient Summary
+    NatA-->>NCPA: Patient Summary (national format)
+    NCPA->>NCPA: Transcode and translate into<br/>Country B's language and code systems
+    NCPA-->>NCPB: XCA Cross-Gateway Retrieve (ITI-39):<br/>translated Patient Summary
+    NCPB-->>HP: Patient Summary displayed
+    end
+
+    rect rgb(255,245,230)
+    Note over HP,NatA: ePrescription and eDispensation
+    NCPB->>NCPA: Order Service:<br/>request active ePrescriptions
+    NCPA->>NatA: Retrieve ePrescriptions
+    NatA-->>NCPA: ePrescription list (national format)
+    NCPA->>NCPA: Transcode and translate
+    NCPA-->>NCPB: Translated ePrescription list
+    NCPB-->>HP: Prescriptions displayed
+    HP->>HP: Dispenses medicine
+    HP->>NCPB: Confirms dispensation
+    NCPB->>NCPA: Dispensation Service:<br/>eDispensation document
+    NCPA->>NatA: Update record<br/>(prevents re-dispensing)
+    end
+```
+
+*This diagram is this documentation's own composition of the named services above into a single end-to-end flow — it is not copied from an official EU diagram, though every service name and transaction code in it is drawn from the epSOS/eHDSI specification. For the authoritative technical reference, see the [epSOS specification wiki — National Contact Points](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_National_Contact_Points) and the [epSOS XCA Profile (Fetch Document) page](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_XCA_Profile_(Fetch_Document)) for the Patient Summary transactions specifically; for a plainer-English overview, see [noze.it — International Patient Summary and MyHealth@EU](https://www.noze.it/en/insights/ips-myhealth-eu-crossborder/) and the European Commission's own [Electronic cross-border health services page](https://health.ec.europa.eu/ehealth-digital-health-and-care/digital-health-and-care/electronic-cross-border-health-services_en). None of these were directly fetchable in this research environment; all are search-engine-synthesized and should be read directly before being relied on for implementation work.*
+
+> ⚠️ **Unverified / conflicting sources**: This diagram compresses and simplifies the real specification (which defines additional detail this documentation did not independently verify, such as the exact Trusted Service List/PKI trust-establishment steps between NCPs, error handling, and audit logging requirements). Treat it as an accurate high-level mental model of the flow, not a substitute for reading the actual epSOS/eHDSI Technical Framework before building against it.
+
 ## Is the gateway layer open to competition?
 
 **Not at the "which gateway do I connect to" level.** The NCPeH model is structurally a **national monopoly gateway per country** — one designated national contact point. But **vendor competition happens one level down**: the national eHealth agency/ministry that owns the NCPeH mandate typically procures the underlying software/integration platform through public tenders, so IT vendors compete to be *the* contracted technology supplier/system integrator behind a given country's NCPeH, rather than operating parallel competing gateways. This matches the pattern seen in France (ANS as public operator, likely contracting technology suppliers) and Cyprus (NeHA as public operator) — this is analysis based on those examples, not a confirmed general rule stated by any single source.
@@ -180,6 +241,13 @@ The near-total reliance on a single market-research firm for EHDS-specific figur
 - [PubMed — "OpenNCP: a novel framework to foster cross-border e-Health services" (original ~2015 paper, source of the "10 Member States" pilot-era figure)](https://pubmed.ncbi.nlm.nih.gov/25991222/) (search synthesis; not directly fetched)
 - [Springer — KONFIDO: An OpenNCP-Based Secure eHealth Data Exchange System](https://link.springer.com/chapter/10.1007/978-3-319-95189-8_2) (search synthesis; not directly fetched)
 - [European Commission — Electronic cross-border health services](https://health.ec.europa.eu/ehealth-digital-health-and-care/digital-health-and-care/electronic-cross-border-health-services_en) (search synthesis; domain blocked for direct fetch — source for the live-country rollout list)
+- [epSOS specification wiki — National Contact Points](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_National_Contact_Points) (search synthesis; Fraunhofer domain blocked for direct fetch — primary technical source for the NCP-A/NCP-B workflow diagram)
+- [epSOS specification wiki — XCA Profile (Fetch Document)](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_XCA_Profile_(Fetch_Document)) (search synthesis; domain blocked for direct fetch)
+- [epSOS specification wiki — XCA Profile (Retrieve Document)](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_XCA_Profile_(Retrieve_Document)) (search synthesis; domain blocked for direct fetch)
+- [epSOS specification wiki — Informed Consent](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_Informed_Consent) (search synthesis; domain blocked for direct fetch)
+- [IHE ITI Technical Framework — Cross-Community Patient Discovery (XCPD)](https://profiles.ihe.net/ITI/TF/Volume1/ch-27.html) (search synthesis; not directly fetched)
+- [IHE ITI Technical Framework — Cross-Community Access (XCA)](https://profiles.ihe.net/ITI/TF/Volume1/ch-18.html) (search synthesis; not directly fetched)
+- [das-e-rezept-fuer-deutschland.de — MyHealth@EU explainer](https://www.das-e-rezept-fuer-deutschland.de/en/advantages/myhealtheu) (search synthesis; domain blocked for direct fetch — plain-English patient-facing overview)
 - [European Commission — electronic cross-border health services](https://health.ec.europa.eu/ehealth-digital-health-and-care/digital-health-and-care/electronic-cross-border-health-services_en)
 - [eHealth Network — guideline on organizational framework for NCPeH (PDF)](https://www.ncpehealth.gr/files/04_guideline_on_an_organizational_framework_for_ncpeh.pdf)
 - [ANS/esante.gouv.fr — NCPeH Sesali](https://ue.esante.gouv.fr/defining-european-ehealth-framework-and-contributing-common-approach/ncpeh-sesali)
