@@ -15,12 +15,27 @@ The other files in this folder describe the EEHRxF as "not yet formally establis
 
 The technical work feeding the EEHRxF is done by **[EURIDICE](https://euridice.org/)** ("European Interoperability Specifications for Digital Solutions in Healthcare"), a joint initiative of **HL7 Europe** and **IHE Europe**. EURIDICE combines HL7's FHIR authoring process with IHE's profiling/actor-transaction methodology and connectathon testing, explicitly to produce specifications that support "the requirements of the EHDS regulation" (search synthesis of [euridice.org](https://euridice.org/) and the [HL7 Europe/IHE-Europe joint ballot announcement](https://www.hl7europe.org/hl7-europe-and-ihe-europe-open-coordinated-ballots-for-european-fhir-implementation-guides-developed-jointly-in-the-euridice-collaboration/)). This is an industry/professional-association-led technical process — not the European Commission itself — that is expected to feed into the Commission's own binding "common specifications" implementing act due by 26 March 2027 under Article 36 (see [02-implementation-timeline.md](02-implementation-timeline.md)); no source found in this research states that the Commission has formally adopted EURIDICE's output as-is, so treat these as the leading technical *candidates*, not yet law.
 
-There are two layers of draft specification:
+There are three layers of draft/live specification in play, plus one specialized track that cuts across two of them:
 
-1. **Content Implementation Guides** (HL7 Europe) — define what the clinical data looks like as FHIR resources, one per EEHRxF priority category.
-2. **The transport/API layer** (EURIDICE joint project) — defines how a system actually calls another system to get that data: authentication, discovery, patient matching, and the REST operations themselves.
+1. **Content** (HL7 Europe content IGs) — defines what the clinical data looks like as FHIR resources, one per EEHRxF priority category.
+2. **National transport** (the draft EU Health Data API, EURIDICE joint project) — defines how an EHR system actually calls the national gateway to get that data: authentication, discovery, patient matching, and the REST operations themselves.
+3. **Cross-border transport** (NCPeH-to-NCPeH over MyHealth@EU) — a separate layer again, "governed separately" from layer 2, and — unlike layers 1 and 2 — already **live today**, just running on the older epSOS/eHDSI generation rather than FHIR.
 
-Imaging has a third layer specific to it, described separately below, because it is not FHIR-only.
+**Imaging is the exception that cuts across layers 2 and 3**: the FHIR-based transport layers above only move metadata (an Imaging Report, or an Imaging Manifest describing which images exist). Actually retrieving the pixel data itself uses **MADO**, a separate DICOM-specific mechanism, at both the national and cross-border legs — covered in full below.
+
+```mermaid
+flowchart TD
+    L1["<b>Layer 1 — Content</b><br/>what the data looks like<br/><br/>HL7 Europe content IGs (FHIR)<br/><i>draft / CI-build</i>"]
+    L2["<b>Layer 2 — National transport</b><br/>EHR to national gateway<br/><br/>draft EU Health Data API<br/><i>draft / STU1 ballot</i>"]
+    L3["<b>Layer 3 — Cross-border transport</b><br/>gateway to gateway<br/><br/>NCPeH-to-NCPeH over MyHealth@EU<br/><i>LIVE — epSOS/eHDSI generation</i>"]
+    MADO["<b>Imaging pixel data</b><br/>a parallel track, not a 4th layer<br/><br/>MADO over DICOMweb's WADO-RS"]
+
+    L1 --> L2 --> L3
+    L2 -.metadata only, not pixels.-> MADO
+    MADO -.cross-border via XC-WADO.-> L3
+```
+
+*This diagram is this documentation's own synthesis of the layer structure described throughout this file — it is not a published EU diagram. Layer 3 is the only one already live today, on the older epSOS/eHDSI generation rather than FHIR — see [05-gateway-market-and-api-status.md](05-gateway-market-and-api-status.md) for the detailed sequence diagram of exactly how it works. The tables and prose above and below give the full detail (package IDs, versions, dependencies) each box here summarizes.*
 
 ## The content Implementation Guides (what the clinical data looks like)
 
@@ -67,6 +82,8 @@ In plain terms: **the draft EHDS API is a profiled FHIR REST API, not a bespoke 
 
 **Priority coverage confirmed in the IG's scope**: Patient Summary, ePrescription/eDispensation, Laboratory Results, Imaging Reports, Imaging Manifests, and Hospital Discharge Reports — i.e. explicitly all of the EEHRxF priority categories from Annex I.
 
+**Imaging is covered by this API only for the metadata, not the pixel data.** The EU Health Data API's MHD/PDQm-based pattern is how you'd fetch an Imaging Report or an Imaging Manifest as a FHIR resource — same as any other document. But actually retrieving the imaging *study itself* (the DICOM pixel data the manifest points to) does **not** go through this API at all — it goes through **MADO**, a separate, DICOM-specific mechanism layered on top of DICOMweb's WADO-RS, covered in full in [the next section](#imaging-specifically-mado-and-how-it-relates-to-dicomweb). In the three-layer picture below, MADO is a specialized sibling of this transport layer, not a replacement for it.
+
 ## Will EHR vendors (Dedalus, etc.) have to implement this API directly, or will a national gateway do it for them?
 
 This is genuinely the single most consequential open design question for a vendor, and the IG itself answers it directly — read from [`member-state-architectures.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/member-state-architectures.md) in the EU Health Data API repo. **The spec deliberately does not decide this — it explicitly states "this IG does not prescribe" the national infrastructure design, and instead defines only "the API surface at the EHR system boundary," leaving Member States to choose the architecture.** Two named patterns exist in the source text:
@@ -80,7 +97,7 @@ This is genuinely the single most consequential open design question for a vendo
 
 So: **it is not "vendors will/won't implement the API" — it's a per-country architecture decision, and the answer is already visibly different across the countries this documentation covers.** In a Pattern 1 country, Dedalus (or any HIS vendor) would mainly need to add a document-publish capability pointed at the national repository — the "wrapper" the question asks about is exactly the national gateway acting as Access Provider on the vendor's behalf. In a Pattern 2 country, the vendor is the wrapper — there is no intermediary insulating them from the API's technical requirements.
 
-**Cross-border is a separate, third layer again.** Per [`usecase-cross-border-ncp.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/usecase-cross-border-ncp.md) in the same repo: this IG **only** specifies the national leg (EHR system ↔ national infrastructure). The country-to-country leg — one country's NCPeH querying another country's NCPeH over MyHealth@EU — is explicitly called out as **"governed separately by the NCPeH API specification,"** which this research did not find published as its own EURIDICE FHIR IG (it may still be the older eHDSI/OpenNCP SOAP-based mechanism, or an as-yet-unpublished draft — flagged here as an open gap, not a confirmed fact either way).
+**Cross-border (Layer 3) is a separate layer again**, per the [layer diagram above](#who-is-actually-drafting-these-specs). Per [`usecase-cross-border-ncp.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/usecase-cross-border-ncp.md) in the same repo: this IG **only** specifies Layer 2, the national leg (EHR system ↔ national infrastructure). The country-to-country leg — one country's NCPeH querying another country's NCPeH over MyHealth@EU — is explicitly called out as **"governed separately by the NCPeH API specification,"** which this research did not find published as its own EURIDICE FHIR IG (it may still be the older eHDSI/OpenNCP SOAP-based mechanism — see [05-gateway-market-and-api-status.md](05-gateway-market-and-api-status.md) for how that live mechanism actually works — or an as-yet-unpublished FHIR draft; flagged here as an open gap, not a confirmed fact either way).
 
 > ⚠️ **Unverified / conflicting sources**: These quotes and architectural patterns are read directly from the IG's own GitHub source (`raw.githubusercontent.com`), which is higher-confidence than most of this documentation set — but the rendered/build version of the IG (`build.fhir.org`, `hl7.eu/fhir`) could not be directly fetched to cross-check formatting or see if this page has since been revised. The claim that Finland/Austria/Denmark/France/Estonia specifically use "Pattern 1" is this document's own inference from the general "existing national XDS/XCA deployments" description plus the country profiles in [04-other-member-states.md](04-other-member-states.md) — the source text names the pattern-category, not those specific five countries by name.
 
