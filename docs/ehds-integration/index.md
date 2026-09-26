@@ -39,6 +39,9 @@ This documentation set was synthesized from five research notes compiled in a pr
 | [05-gateway-market-and-api-status.md](05-gateway-market-and-api-status.md) | MyHealth@EU/NCPeH architecture, who builds national gateways, vendor activity (confirmed vs speculative), EEHRxF/standards status |
 | [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md) | The actual draft FHIR IGs (EPS, MPD, Laboratory, HDR, Imaging/MADO) and the EU Health Data API — package IDs, versions, dependencies, ballot status, real example resources, whether vendors implement the API directly vs. a national gateway, and a cross-border pull diagram |
 | [07-recommendations.md](07-recommendations.md) | Practical recommendations for evaluating an EHDS gateway/integration product: timing, target countries, risks, watch-list |
+| [08-glossary.md](08-glossary.md) | Every acronym and specialist term used in this documentation (NCPeH, EEHRxF, HDAB, FHIR, MADO, national bodies by country, etc.), defined in one place |
+
+New to the acronyms? Unfamiliar terms like **NCPeH**, **EEHRxF**, **HDAB** or **MADO** are all defined in the [glossary](08-glossary.md).
 
 ## Sources
 

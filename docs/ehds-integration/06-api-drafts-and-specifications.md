@@ -7,6 +7,8 @@ sidebar_label: API Drafts & Specifications
 
 The other files in this folder describe the EEHRxF as "not yet formally established" in the abstract. This file goes one level deeper: it identifies the actual draft technical artifacts being built right now, who is building them, what state they are in, and — because that's genuinely useful for evaluating build risk — what the draft resources and APIs concretely look like.
 
+*This is the most acronym-dense file in the set — unfamiliar terms (MADO, MHD, PDQm, IPA, FSH, STU, etc.) are all defined in the [glossary](08-glossary.md).*
+
 > **Methodology note, different from the other files in this folder**: most of this file's sourcing comes from directly reading the public GitHub repositories (`github.com/hl7-eu/*`, `github.com/euridice-org/*`) and their raw source files (`raw.githubusercontent.com`), which **were** reachable in this research environment — unlike EUR-Lex, `build.fhir.org`, `euridice.org`, `ihe.net` and most other primary sources, which were blocked by the network egress proxy (same limitation documented in the [overview](index.md)). That means the package IDs, version numbers, dependency lists, and FSH (FHIR Shorthand) source code quoted below are read directly from the authoritative source repositories, not search-engine synthesis — higher confidence than most of the rest of this documentation set. Where a claim instead relies on search-engine synthesis (e.g. the MADO/DICOMweb relationship, the ballot timeline), that is flagged explicitly.
 
 ## Who is actually drafting these specs
