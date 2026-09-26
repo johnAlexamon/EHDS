@@ -22,6 +22,8 @@ const config = {
 
   onBrokenLinks: 'throw',
 
+  clientModules: ['./src/clientModules/mermaidZoom.js'],
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
