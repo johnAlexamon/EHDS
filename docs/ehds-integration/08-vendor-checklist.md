@@ -11,6 +11,8 @@ This file answers the practical question directly: if you're building or selling
 
 **The underlying API/standard set is designed to be the same across the whole EU — but how much of it you personally have to implement, versus a national gateway absorbing it on your behalf, is a per-country decision.** It is closer to "one shared toolkit, deployed differently per country" than either "one identical model everywhere" or "27 completely different national APIs." Three things are constant everywhere; one thing varies by country; one thing you never touch at all.
 
+**There are also two directions, and both are legally required, not just one.** EHDS Annex II requires an EHR system to (§2.1) *"provide an interface enabling access"* to its own patients' data **and, separately**, (§2.2) *"be able to receive"* EEHRxF data from elsewhere. In the draft EU Health Data API these are two distinct, both-mandatory actor roles — **Access Provider/Publisher** (serving/publishing your own data out) and **Document/Resource Consumer** (querying and receiving someone else's data in). The build checklist below covers both — the second one is what actually lets your own clinicians *view* an incoming patient's record, whether that patient is domestic or arrived cross-border from another country. See [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md#two-directions-ehds-requires-ehrs-to-both-provide-access-and-receive-data) for the exact regulatory text and requirement IDs.
+
 ## What's the same in every country (the shared toolkit)
 
 This is the EU Health Data API and content IG stack from [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md) — the same named standards, everywhere, by design (this consistency is the explicit point of the EEHRxF and the Regulation's Article 36 "common specifications"):
@@ -26,9 +28,25 @@ This is the EU Health Data API and content IG stack from [06-api-drafts-and-spec
 
 If you build support for this stack once, you have the technical foundation for every EU country — this part is not meant to be country-specific.
 
+## The other direction: querying and displaying incoming data
+
+Everything above is framed around *your* data going out. But per [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md#two-directions-ehds-requires-ehrs-to-both-provide-access-and-receive-data), EHDS Annex II §2.2 separately and mandatorily requires an EHR to be able to **receive** EEHRxF data — implemented as the **Document Consumer** and **Resource Consumer** actor roles. This is what actually lets a clinician using your product look up a patient — including one who just arrived from another country — and see their Patient Summary, medications, lab results, discharge reports, or imaging manifest.
+
+| What | Standard(s) | What it's for |
+|---|---|---|
+| **Query for available documents** | IHE MHD — Document Consumer (`ITI-67`, Find Document References) | "Does this patient have a Patient Summary/Discharge Report/etc. available?" |
+| **Retrieve the document** | IHE MHD — Document Consumer (`ITI-68`, Retrieve Document) | Pull the actual FHIR document Bundle once you know it exists |
+| **Query individual resources** | HL7 IPA client (Resource Consumer) | "What medications/allergies/conditions does this patient have?" — for data exposed as individual resources rather than whole documents |
+| **Patient matching (same as the publish side)** | IHE PDQm — consumer role | Confirm you're pulling the record for the right patient before you query for documents |
+| **Render it for the clinician** | Not a wire-protocol requirement — it's product/UX work | Turning a received FHIR Bundle (which may be structured and titled in another country's language and section conventions, e.g. the Austrian `aps` example in [06](06-api-drafts-and-specifications.md)) into something a clinician can actually read and act on at the point of care |
+
+This applies **regardless of whether the incoming data is domestic or cross-border-sourced.** From the EHR's perspective, both arrive the same way: as a response to this same Layer 2 Document/Resource Consumer query against the national gateway. By the time a foreign patient's data reaches your product, the national NCPeH has already fetched, translated, and normalized it (see [07-cross-border-exchange.md](07-cross-border-exchange.md)) — your EHR still has to query for it and build the screen that displays it, exactly as it would for a domestic patient. **The wire protocol is the easy part here; the harder, genuinely vendor-specific work is the clinical UI** — safely surfacing a document that may be partly untranslated, structured differently than your own product's native layout, or missing sections your users expect.
+
+One open question worth flagging: whether the *EHR itself* has to be the thing that queries (i.e., implement the Consumer role directly), or whether a country could instead deploy a separate national viewer/portal application that clinicians use alongside their EHR for incoming/foreign records, isn't fully settled by the source text. The IG's own use-case documentation explicitly names "EHRs acting as Document/Resource Consumers" as the expected pattern in both its national architecture examples — so building this into your own product is the better-supported assumption — but as with the Pattern 1/Pattern 2 choice below, confirm the expectation with each target country's Digital Health Authority rather than assuming.
+
 ## What varies by country: how much of that stack you personally run
 
-This is the Pattern 1 / Pattern 2 choice from [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md), and it **is** an explicit per-country decision, made by each Member State's national infrastructure, not by the vendor and not by the EU Health Data API spec itself (which says outright: *"this IG does not prescribe"* the national architecture):
+This is the Pattern 1 / Pattern 2 choice from [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md), and it **is** an explicit per-country decision, made by each Member State's national infrastructure, not by the vendor and not by the EU Health Data API spec itself (which says outright: *"this IG does not prescribe"* the national architecture). **This choice is specifically about the *serving* side (Access Provider) — who answers queries from others.** It doesn't change whether you also need the Consumer/viewing capability above; that's a separate, additional requirement in every country.
 
 | | Pattern 1: Centralized repository | Pattern 2: Federated query |
 |---|---|---|
@@ -44,14 +62,18 @@ One layer of genuine country-specific technical variation exists even within the
 
 Regardless of which pattern your target country uses, **you never implement the cross-border (Layer 3) protocol yourself.** Per [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md): the EHR system's technical boundary is always the national Layer 2 API; the country-to-country NCPeH-to-NCPeH exchange is a structurally separate protocol, "governed separately," whose only participants in every source found are national gateways. See [07-cross-border-exchange.md](07-cross-border-exchange.md) for exactly how that layer works (today, on the live epSOS/eHDSI mechanism) and its in-progress FHIR successor — none of it is your integration surface.
 
+**This doesn't mean you have no role in cross-border data, though** — it means your role is unchanged from the domestic case. Once a foreign patient's Patient Summary or ePrescription list has crossed into your country via NCPeH-to-NCPeH and landed in your national gateway, *your* EHR still needs to query for it and display it, exactly the same Layer 2 Document/Resource Consumer call as for any domestic patient (see [above](#the-other-direction-querying-and-displaying-incoming-data)). You don't build anything cross-border-specific — you just need the ordinary Consumer capability to actually be there when a foreign patient shows up.
+
 ## A practical build checklist
 
 1. **Implement the content IGs** — map your internal EHR data model to the FHIR profiles for Patient Summary, ePrescription/eDispensation, Laboratory, Hospital Discharge Report, and Imaging Report/Manifest ([06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md) has the package IDs and a real example).
 2. **Implement the EU Health Data API transport stack** — PDQm for patient matching, MHD for document query/publish, SMART Backend Services for authentication. Build **both** the publish-only path (for Pattern 1 countries) and the full Access Provider path (for Pattern 2 countries) if you intend to sell into both kinds of market — you won't know which you need until you know the target country.
-3. **Add MADO/WADO-RS support for imaging**, alongside whatever you already do with your PACS integration — this is a separate call path from the FHIR document/resource calls above.
-4. **For each target country, confirm the pattern before scoping the deal**: is the national gateway going to absorb the query-serving burden (Pattern 1), or do you need to run a production FHIR server yourself (Pattern 2)? This is a sales-engineering question to ask the national gateway operator or Digital Health Authority directly, not something derivable from the spec alone.
-5. **Budget for country-specific content-profile localization** on top of the shared EU base profiles — don't assume zero marginal engineering cost per new country.
-6. **Do not build cross-border (Layer 3) support** — it isn't your integration surface in any country.
+3. **Implement the Consumer side too** — MHD Document Consumer (ITI-67/68) and, where relevant, an IPA resource-query client — so your own product can pull a patient's incoming data (domestic or cross-border-sourced) rather than only publishing/serving your own. This is required in every country, independent of the Pattern 1/2 choice above.
+4. **Build the clinical UI to render what you receive** — a Patient Summary/Lab Report/Discharge Report/Imaging Manifest Bundle pulled via the Consumer role needs an actual screen a clinician can use, including cases where content arrives in another country's language or section structure. This is real, non-trivial product work, not covered by conformance to the wire protocol alone.
+5. **Add MADO/WADO-RS support for imaging**, alongside whatever you already do with your PACS integration — this is a separate call path from the FHIR document/resource calls above.
+6. **For each target country, confirm the pattern before scoping the deal**: is the national gateway going to absorb the query-serving burden (Pattern 1), or do you need to run a production FHIR server yourself (Pattern 2)? This is a sales-engineering question to ask the national gateway operator or Digital Health Authority directly, not something derivable from the spec alone.
+7. **Budget for country-specific content-profile localization** on top of the shared EU base profiles — don't assume zero marginal engineering cost per new country.
+8. **Do not build the cross-border (Layer 3) NCPeH-to-NCPeH protocol itself** — it isn't your integration surface in any country; you only ever need the ordinary Layer 2 Consumer call (step 3) to receive what the national gateway has already fetched cross-border.
 
 ## Is this settled, or could it still change?
 

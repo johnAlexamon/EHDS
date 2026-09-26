@@ -84,6 +84,55 @@ In plain terms: **the draft EHDS API is a profiled FHIR REST API, not a bespoke 
 
 **Imaging is covered by this API only for the metadata, not the pixel data.** The EU Health Data API's MHD/PDQm-based pattern is how you'd fetch an Imaging Report or an Imaging Manifest as a FHIR resource — same as any other document. But actually retrieving the imaging *study itself* (the DICOM pixel data the manifest points to) does **not** go through this API at all — it goes through **MADO**, a separate, DICOM-specific mechanism layered on top of DICOMweb's WADO-RS, covered in full in [the next section](#imaging-specifically-mado-and-how-it-relates-to-dicomweb). In the three-layer picture below, MADO is a specialized sibling of this transport layer, not a replacement for it.
 
+## Two directions: EHDS requires EHRs to both provide access and receive data
+
+Everything above frames the EU Health Data API from the "publish/serve your own data" side — but the Regulation itself, and the IG built on it, are explicit that this is only half of what's required. The other half is exactly the "can my own clinicians view a patient's data, including data that arrived from another country" question. Read directly from the IG's regulatory-traceability page ([`regulatoryAnchors.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/regulatoryAnchors.md)):
+
+> **EHDS Annex II §2.1**: *"SHALL provide an **interface enabling access** to the personal electronic health data [formatted in EEHRxF]"*
+> **EHDS Annex II §2.2**: *"SHALL **be able to receive** personal electronic health data [formatted in EEHRxF]"*
+
+The IG's underlying requirements source (the Xt-EHR Joint Action's Deliverable 5.1) interprets these as two symmetric halves of one query-based architecture, and maps each to its own IG actor:
+
+| Regulation | D5.1 interpretation | IG actor |
+|---|---|---|
+| Annex II §2.1 "provide interface enabling access" | **Producer** side: serve queries for EEHRxF data | **Access Provider** (Document Access Provider / Resource Access Provider) |
+| Annex II §2.2 "be able to receive" | **Consumer** side: initiate queries and receive/process the response | **Consumer** (Document Consumer / Resource Consumer) |
+
+Both sides are phrased as **SHALL** (mandatory) requirements in the IG's own requirements-traceability table — the Consumer side is not an optional extra:
+
+| Requirement ID | Requirement text (quoted) | Actor |
+|---|---|---|
+| `api-provider-doc` | "The EHR system... SHALL offer an API that enables an external system to access and retrieve its priority category data" | Access Provider |
+| `api-consumer-doc` | "The EHR system... SHALL support an external document query API" | Consumer |
+| `api-consumer-resource` | "The EHR system... SHALL support an external resource query API" | Consumer |
+| `api-consumer-data` | "The EHR system SHALL be able to receive and handle data conforming to the EEHRxF data format" | Consumer |
+
+**The Document Consumer / Resource Consumer actors, concretely**, per [`actors.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/actors.md):
+
+- **Document Consumer** — *"Consumes EEHRxF FHIR documents by querying a Document Access Provider."* Built from an IUA Authorization Client, a PDQm Patient Demographics Consumer, and an MHD Document Consumer — concretely: get an access token (ITI-71), look up the patient (PDQm ITI-78), find document references (MHD ITI-67), then retrieve the document itself (MHD ITI-68).
+- **Resource Consumer** — *"A FHIR client that consumes external FHIR resources by querying a Resource Access Provider,"* built on the same authorization/patient-lookup steps plus an HL7 IPA client for the actual resource query.
+
+```mermaid
+sequenceDiagram
+    participant EHR as Hospital EHR<br/>(Document/Resource Consumer)
+    participant Gateway as National gateway<br/>(Document/Resource Access Provider)
+
+    EHR->>Gateway: Get Access Token (IUA ITI-71)
+    Gateway-->>EHR: access_token
+    EHR->>Gateway: Patient Lookup (PDQm ITI-78)
+    Gateway-->>EHR: Patient Bundle
+    EHR->>Gateway: Find Document References (MHD ITI-67)
+    Gateway-->>EHR: DocumentReference Bundle
+    EHR->>Gateway: Retrieve Document (MHD ITI-68)
+    Gateway-->>EHR: Patient Summary / Lab Report /<br/>Discharge Report / Imaging Manifest
+```
+
+*This is the "viewing" path — the mirror image of the publish/serve path described above. It's what actually lets a clinician using this EHR see a patient's data at the point of care, including data the national gateway itself pulled in from another country's NCPeH (see [07-cross-border-exchange.md](07-cross-border-exchange.md)). From the EHR's point of view, both a domestic record and a cross-border-sourced one arrive through this same Layer 2 Consumer call — already translated and normalized by the national gateway before it ever reaches the EHR.*
+
+**This is not a hypothetical extra.** The IG's own deployment-pattern page ([`usecase-cross-org.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/usecase-cross-org.md)) explicitly names "EHRs acting as Document Consumers" and "destination EHR systems acting as Document/Resource Consumers" in *both* of its illustrative national architecture patterns (Central Repository and Federated) — the same two patterns discussed as "Pattern 1/Pattern 2" below.
+
+**Practical implication:** implementing only the *publish*/*Access Provider* side gets an EHR system to "other systems can see my patients' data" — it does not, by itself, let that EHR's own clinicians view a patient's incoming or foreign-sourced data. That is a separate, equally-mandatory capability (the Consumer role), plus — beyond the wire protocol — genuine clinical-UI work to actually render an incoming FHIR document Bundle (which may arrive in another country's language and section layout) in a way a clinician can use at the point of care. See [08-vendor-checklist.md](08-vendor-checklist.md) for how this folds into the practical build checklist.
+
 ## Will EHR vendors (Dedalus, etc.) have to implement this API directly, or will a national gateway do it for them?
 
 This is genuinely the single most consequential open design question for a vendor, and the IG itself answers it directly — read from [`member-state-architectures.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/member-state-architectures.md) in the EU Health Data API repo. **The spec deliberately does not decide this — it explicitly states "this IG does not prescribe" the national infrastructure design, and instead defines only "the API surface at the EHR system boundary," leaving Member States to choose the architecture.** Two named patterns exist in the source text:
@@ -96,6 +145,8 @@ This is genuinely the single most consequential open design question for a vendo
 | **Practical implication for a vendor like Dedalus** | Lower integration burden per deployment, but the *national gateway operator* (e.g. Kela/Kanta in Finland) becomes the real technical gatekeeper and the entity actually implementing/maintaining EHDS conformance | Higher integration burden — the vendor's own product must implement and keep conformant a live FHIR Access Provider — but also more direct control and less dependence on a third party's roadmap |
 
 So: **it is not "vendors will/won't implement the API" — it's a per-country architecture decision, and the answer is already visibly different across the countries this documentation covers.** In a Pattern 1 country, Dedalus (or any HIS vendor) would mainly need to add a document-publish capability pointed at the national repository — the "wrapper" the question asks about is exactly the national gateway acting as Access Provider on the vendor's behalf. In a Pattern 2 country, the vendor is the wrapper — there is no intermediary insulating them from the API's technical requirements.
+
+> **This Pattern 1/Pattern 2 choice is specifically about the *serving* (Access Provider) side — who answers queries *from* others.** It is a separate question from the Consumer/viewing side described [above](#two-directions-ehds-requires-ehrs-to-both-provide-access-and-receive-data). Even in a Pattern 1 country, where the EHR "does not need to host a query API" for others, the EHR still typically needs to act as a Document/Resource **Consumer** itself if its own clinicians are going to view incoming data — domestic or cross-border — inside the product, rather than relying on some separate national viewer application. Nothing in the source text found in this research suggests Pattern 1 exempts a vendor from also implementing the Consumer role; it only exempts them from being queried by others.
 
 **In both patterns, though, the EHR system's technical boundary is always Layer 2 — it never speaks Layer 3 (cross-border) directly.** The Pattern 1/Pattern 2 choice changes *who* does the work and *who initiates the call* (the EHR pushes in Pattern 1; the national gateway pulls from the EHR in Pattern 2), not *which layer* the EHR touches — in both cases the exchange happens over this Layer 2 national-transport surface. Layer 3 (NCPeH-to-NCPeH) is a structurally separate protocol whose only two participants, in every source found, are national gateways; no source describes a hospital EHR system directly implementing or speaking the cross-border protocol. The national gateway is the mandatory intermediary that translates between the two, regardless of which national pattern a country chooses.
 
@@ -215,6 +266,9 @@ Search-engine synthesis (not independently fetched) of the [HL7 Europe/IHE-Europ
 - [euridice-org/eu-health-data-api — `usecase-cross-border-ncp.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/usecase-cross-border-ncp.md) (directly fetched — source for the NCPeH cross-border flow and the "governed separately" statement)
 - [euridice-org/eu-health-data-api — `actors.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/actors.md) (directly fetched — source for the Access Provider/Consumer/Publisher actor definitions)
 - [euridice-org/eu-health-data-api — `resourceExchange.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/resourceExchange.md) (directly fetched)
+- [euridice-org/eu-health-data-api — `regulatoryAnchors.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/regulatoryAnchors.md) (directly fetched — source for the Annex II §2.1/§2.2 quotes, the D5.1 Producer/Consumer interpretation, and the `api-provider-*`/`api-consumer-*` requirements table)
+- [euridice-org/eu-health-data-api — `usecase-cross-org.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/usecase-cross-org.md) (directly fetched — source for both national architecture patterns explicitly including "EHRs acting as Document/Resource Consumers")
+- [euridice-org/eu-health-data-api — `index.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/index.md) (directly fetched — IG scope, audience, and priority-category/exchange-pattern mapping)
 - [hl7-eu/eps — HL7 Europe Patient Summary](https://github.com/hl7-eu/eps) and its [`sushi-config.yaml`](https://raw.githubusercontent.com/hl7-eu/eps/master/sushi-config.yaml) and [example FSH file](https://raw.githubusercontent.com/hl7-eu/eps/master/input/fsh/examples/EPS-at-aps-example-bundle-01-no-problems-medication-allergies.fsh) (directly fetched)
 - [hl7-eu/mpd — HL7 Europe Medication Prescription and Dispense](https://github.com/hl7-eu/mpd) and its [`sushi-config.yaml`](https://raw.githubusercontent.com/hl7-eu/mpd/master/sushi-config.yaml) and [`prescriptions.fsh`](https://raw.githubusercontent.com/hl7-eu/mpd/master/input/fsh/examples/prescriptions.fsh) (directly fetched)
 - [hl7-eu/laboratory — HL7 Europe Laboratory Report](https://github.com/hl7-eu/laboratory) and its [`sushi-config.yaml`](https://raw.githubusercontent.com/hl7-eu/laboratory/master/sushi-config.yaml) (directly fetched)
