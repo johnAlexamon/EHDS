@@ -33,7 +33,19 @@ const config = {
       onBrokenMarkdownLinks: 'warn',
     },
   },
-  themes: ['@docusaurus/theme-mermaid'],
+  themes: [
+    '@docusaurus/theme-mermaid',
+    [
+      '@easyops-cn/docusaurus-search-local',
+      /** @type {import('@easyops-cn/docusaurus-search-local').PluginOptions} */
+      ({
+        hashed: true,
+        indexBlog: false,
+        docsDir: '../docs/ehds-integration',
+        docsRouteBasePath: '/',
+      }),
+    ],
+  ],
 
   presets: [
     [
