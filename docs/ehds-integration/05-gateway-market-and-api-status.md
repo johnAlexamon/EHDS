@@ -41,96 +41,9 @@ flowchart LR
 
 ## How MyHealth@EU/NCPeH is architected today
 
-MyHealth@EU (eHDSI) is a **federated architecture**: the European Commission runs shared central/cross-cutting ICT services (terminology, configuration, cross-border trust), and each Member State builds and operates exactly **one National Contact Point for eHealth (NCPeH)** that connects to it. This is a **single national gateway per country, not a competitive multi-vendor field**. The NCPeH exposes the country's own eHealth services abroad, exposes other countries' services domestically, and manages authentication, consent, and semantic/syntactic matching between national and EU data variants ([search synthesis of noze.it / NCPeH wiki / eHealth Network guidance](https://www.noze.it/en/insights/ips-myhealth-eu-crossborder/); [NCPeH CY](https://ncpeh.cy/en/national-contact-points/)). Communication between two NCPeHs reportedly uses a SOAP/REST request carrying a SAML assertion attesting the requester's identity, country, and legal basis (search synthesis, primary source not directly verified).
-
-Member States must establish and operate the NCPeH following eHealth Network guidelines, coordinated via the eHealth DSI EU countries Expert Group (eHMSEG), with one nominated manager per participating country ([eHealth Network guideline document](https://www.ncpehealth.gr/files/04_guideline_on_an_organizational_framework_for_ncpeh.pdf)). Concrete examples of who operates the NCPeH: in **France**, the NCPeH "Sesali" is created and operated by **ANS** (Agence du Numérique en Santé) under mandate of the French Ministry of Health ([ANS/esante.gouv.fr](https://ue.esante.gouv.fr/defining-european-ehealth-framework-and-contributing-common-approach/ncpeh-sesali)); in **Cyprus**, the NCPeH platform is operated/supported by the **National Electronic Health Authority (NeHA)**, a national public authority ([NeHA Cyprus](https://neha.org.cy/en/national-contact-points/)).
+MyHealth@EU (eHDSI) is a **federated architecture**: the European Commission runs shared central/cross-cutting ICT services (terminology, configuration, cross-border trust), and each Member State builds and operates exactly **one National Contact Point for eHealth (NCPeH)** that connects to it — a **single national gateway per country, not a competitive multi-vendor field**. Live, open-source implementations already exist (OpenNCP), and a FHIR-based successor is in active development — the full architecture, the live epSOS/eHDSI workflow, and the FHIR migration status all have their own dedicated chapter: see **[07-cross-border-exchange.md](07-cross-border-exchange.md)**.
 
 **HealthData@EU** (secondary use) is a separate, newer node-based network connecting national HDABs/health data hubs to an EU Central Platform via the eDelivery AS4 building block. Identified pilot nodes include BBMRI, Health Data Lab (Germany), Danish Health Data Authority (Denmark), **Findata (Finland)**, Health Data Hub (France), Sciensano (Belgium), Norwegian Directorate of eHealth (Norway), and the Croatian Institute of Public Health (Croatia) ([PMC — Piloting an infrastructure for secondary use of health data](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12420900/)). Its technical components are: (1) information systems for national metadata catalogues, (2) information systems for cross-border data access applications/requests, and (3) secure processing environments; it uses the EU's eDelivery Building Block (AS4 protocol) for secure machine-to-machine connectivity ([PMC / EU Digital Building Blocks](https://ec.europa.eu/digital-building-blocks/sites/pages/viewpage.action?pageId=592643692)). Release 3 of the eDelivery AS4 cross-border gateway introduced the **"HealthData@EU Health Data Dispatcher,"** replacing the earlier EHDS2 Pilot connector while keeping the same API ([EU Digital Building Blocks](https://ec.europa.eu/digital-building-blocks/sites/x/T2bkN)).
-
-## Do live NCPeH implementations already exist, and are they open source?
-
-**Yes to both — but this is the older generation of the technology, not the new FHIR-based drafts described in [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md).** It's worth being precise about which "NCPeH" is being discussed, because there are effectively two generations:
-
-- **What's actually live today**: the **epSOS/eHDSI-generation NCPeH**, built on **SOAP web services and the IHE XCA (Cross-Community Access) profile**, exchanging documents in the older HL7 CDA format (not FHIR). This is the operational MyHealth@EU network that has been running since the epSOS pilot era and is what Finland and Estonia used for the first live cross-border ePrescription exchange in 2019 (see [03-finland.md](03-finland.md)).
-- **What's drafted but not yet live**: the FHIR-based EEHRxF content IGs and the EU Health Data API described in [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md), still at CI-build/ballot stage as of this research. No source found in this research states that the live NCPeH network has switched, or has a confirmed date to switch, from the SOAP/CDA generation to the new FHIR generation — this is a real, material gap between "what's running" and "what's being drafted for the future," and is itself a watch-list item.
-
-**The open-source reference implementation is called OpenNCP.** It is described as being under the direct responsibility of the European Commission's DG SANTE, developed as part of the CEF/eHDSI programme, explicitly "dedicated to remain open-source," with governance intended to be driven by the OpenNCP community and health care professionals in cooperation with the Commission (search synthesis of [CEF Digital wiki pages](https://ec.europa.eu/cefdigital/wiki/display/EHNCP/OpenNCP+Release+Notes) and the [OpenNCP Confluence space](https://openncp.atlassian.net/wiki/spaces/ncp/pages/40828931/Connecting+Europe+Facility+CEF); domains not directly fetchable). Its canonical source repository is hosted on the EU's own GitLab instance at [code.europa.eu/ehdsi/ehealth](https://code.europa.eu/ehdsi/ehealth) (also referenced historically at `ec.europa.eu/cefdigital/code` and `ec.europa.eu/digital-building-blocks/code`, reflecting the platform's several rebrandings over the years) — none of these EU-hosted code platforms were directly fetchable in this research environment, so the license and current repository state could not be independently confirmed beyond what search-engine synthesis reports (EUPL, the EU's own open-source license, is the license most consistently reported across sources).
-
-**Real national implementations, confirmed by directly reading their public source code:**
-
-| Country | Repository | License | Confirmed built on OpenNCP? |
-|---|---|---|---|
-| Denmark | [Sundhedsdatastyrelsen/ehdsi](https://github.com/Sundhedsdatastyrelsen/ehdsi) | MIT | **Yes** — explicitly, the repo's own NCP folder is described as containing "the OpenNCP setup," with a separate national-connector component bridging to Danish national infrastructure |
-| Germany | [gematik/api-ncpeh](https://github.com/gematik/api-ncpeh) | EUPL-1.2 | Not confirmed either way in the README — gematik's own description doesn't mention OpenNCP, consistent with Germany's generally more independent/in-house technical approach documented in [04-other-member-states.md](04-other-member-states.md) |
-
-Both repositories are directly browsable, actively-committed public code (Denmark's shows 466 commits; Germany's is explicitly flagged as under active development, with a note that "parts of this code may have been generated using AI-supported technology") — this is about as concrete as "does an implementation exist" evidence gets, short of running the software.
-
-**The architecture splits into a reusable "core" plus a country-specific "national connector."** This is confirmed by an independent, third-party Docker packaging of OpenNCP built for the EU-funded [KONFIDO project](https://link.springer.com/chapter/10.1007/978-3-319-95189-8_2) ([dzobbe/docker-openncp](https://github.com/dzobbe/docker-openncp), Apache-2.0 licensed, directly fetched), which demonstrates a live three-country test setup (Italy querying Spain and Denmark): each country runs its own **National Container** (the generic OpenNCP engine plus that country's connector) with its own database and trust store, and — per the README — "national connectors should be implemented by individual countries, with OpenNCP providing implementation guidance and example code for protocol terminator integration." In other words: **the reusable open-source part is the cross-border protocol engine; each country still writes its own adapter into its national health infrastructure** — the same core pattern (shared engine, national adapter) that recurs throughout this documentation, just for the older SOAP/CDA generation rather than the new FHIR one.
-
-**How many countries are actually live today**: search-engine synthesis of Commission-adjacent sources (not directly fetched — `health.ec.europa.eu` is blocked in this environment) reports Czech Republic, Estonia, Greece, Finland, France, Croatia, Ireland, Lithuania, Luxembourg, Latvia, Malta, Poland and Portugal as live with at least one MyHealth@EU service already; Austria, Cyprus, Denmark, Hungary, Iceland, Italy, Norway, Romania, Sweden and Slovenia are reported as joining through 2025, and Slovakia in 2026 — meaning near-EU/EEA-wide rollout of *some* live NCPeH by the end of this rollout wave, years ahead of the 2029/2031 EHDS-mandated deadlines for the new FHIR-based categories. An older, frequently-cited academic figure (from the original ~2015 OpenNCP paper, [PubMed](https://pubmed.ncbi.nlm.nih.gov/25991222/)) puts early epSOS-era adoption at "10 Member States" — that figure describes the pilot phase, not the current 2026 footprint, and should not be read as today's count.
-
-> ⚠️ **Unverified / conflicting sources**: The exact current OpenNCP license could not be independently confirmed (EUPL is the consistently-reported answer via search synthesis, but the canonical `code.europa.eu` repository itself could not be directly fetched to verify). The live-country list above is search-synthesized from sources not directly fetched and may already be stale given the pace of 2025–2026 rollout activity — verify current status directly at the European Commission's [electronic cross-border health services page](https://health.ec.europa.eu/ehealth-digital-health-and-care/digital-health-and-care/electronic-cross-border-health-services_en) before relying on it. No source found in this research confirms whether/when the live SOAP/CDA-generation NCPeH network will be upgraded to the FHIR-based EEHRxF generation described in [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md) — whether that will be a wholesale replacement, a dual-running transition period, or a version bump within the same OpenNCP codebase is not addressed in any source found.
-
-### How the live cross-border Patient Summary and ePrescription exchange actually works
-
-This is the mechanics of the epSOS/eHDSI-generation flow described above — the thing that's actually running today, using the real named services and IHE transactions from the specification. Two roles recur throughout: **NCP-A**, the National Contact Point of the patient's **country of affiliation** (their home country, which holds the data), and **NCP-B**, the NCP of the **country of treatment** (where the patient currently is). Confirmed via search-engine synthesis of the official [epSOS specification wiki](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_National_Contact_Points) (Fraunhofer-hosted; not directly fetchable in this environment) and related sources:
-
-- **Patient identification** uses the epSOS **Identification Service** (`findEntityByTraits()`), which conforms to the **IHE XCPD** (Cross-Gateway Patient Discovery) profile — NCP-B asks NCP-A "does a patient matching these demographic traits exist in your system?"
-- **Consent is mandatory and captured in Country B**, at the point of care, before any data can be disclosed — either as fresh, encounter-specific consent, or as a prior general consent the patient already gave, reconfirmed on-site. NCP-A verifies that valid consent exists before releasing anything.
-- **Patient Summary retrieval** uses the **IHE XCA** (Cross-Community Access) profile's two-step pattern: a **Cross-Gateway Query (ITI-38)** — "what documents are available?" — followed by a **Cross-Gateway Retrieve (ITI-39)** — "send me that specific document."
-- **ePrescription retrieval** uses the epSOS **Order Service**; the returned eDispensation confirmation uses the **Dispensation Service**.
-- In both cases, **NCP-A transcodes and translates the content into Country B's code systems and language before sending it** — semantic and linguistic translation happens at the source, not the destination.
-- **eDispensation flows the opposite direction**: once the pharmacist in Country B dispenses the medicine, that fact is sent back to NCP-A, which updates the patient's home record — this is what stops the same prescription being dispensed twice.
-
-```mermaid
-sequenceDiagram
-    actor Patient
-    participant HP as Healthcare professional<br/>(pharmacist/clinician, Country B)
-    participant NCPB as NCP-B<br/>(Country of Treatment)
-    participant NCPA as NCP-A<br/>(Country of Affiliation)
-    participant NatA as Country A national infra<br/>(e.g. Finland's Kanta)
-
-    Patient->>HP: Presents for care,<br/>gives national ID / eHIC
-    HP->>NCPB: Requests cross-border access
-
-    rect rgb(240,240,255)
-    Note over HP,NatA: Identification and consent (shared preamble)
-    NCPB->>NCPA: Identification Service:<br/>findEntityByTraits (IHE XCPD)
-    NCPA->>NatA: Match patient demographics
-    NatA-->>NCPA: Candidate match
-    NCPA-->>NCPB: Patient identified
-    HP->>NCPB: Patient gives or confirms<br/>consent at point of care
-    NCPB->>NCPA: Consent asserted
-    end
-
-    rect rgb(235,250,235)
-    Note over HP,NatA: Patient Summary (read only)
-    NCPB->>NCPA: XCA Cross-Gateway Query (ITI-38):<br/>which documents exist?
-    NCPA->>NatA: Retrieve Patient Summary
-    NatA-->>NCPA: Patient Summary (national format)
-    NCPA->>NCPA: Transcode and translate into<br/>Country B's language and code systems
-    NCPA-->>NCPB: XCA Cross-Gateway Retrieve (ITI-39):<br/>translated Patient Summary
-    NCPB-->>HP: Patient Summary displayed
-    end
-
-    rect rgb(255,245,230)
-    Note over HP,NatA: ePrescription and eDispensation
-    NCPB->>NCPA: Order Service:<br/>request active ePrescriptions
-    NCPA->>NatA: Retrieve ePrescriptions
-    NatA-->>NCPA: ePrescription list (national format)
-    NCPA->>NCPA: Transcode and translate
-    NCPA-->>NCPB: Translated ePrescription list
-    NCPB-->>HP: Prescriptions displayed
-    HP->>HP: Dispenses medicine
-    HP->>NCPB: Confirms dispensation
-    NCPB->>NCPA: Dispensation Service:<br/>eDispensation document
-    NCPA->>NatA: Update record<br/>(prevents re-dispensing)
-    end
-```
-
-*This diagram is this documentation's own composition of the named services above into a single end-to-end flow — it is not copied from an official EU diagram, though every service name and transaction code in it is drawn from the epSOS/eHDSI specification. For the authoritative technical reference, see the [epSOS specification wiki — National Contact Points](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_National_Contact_Points) and the [epSOS XCA Profile (Fetch Document) page](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_XCA_Profile_(Fetch_Document)) for the Patient Summary transactions specifically; for a plainer-English overview, see [noze.it — International Patient Summary and MyHealth@EU](https://www.noze.it/en/insights/ips-myhealth-eu-crossborder/) and the European Commission's own [Electronic cross-border health services page](https://health.ec.europa.eu/ehealth-digital-health-and-care/digital-health-and-care/electronic-cross-border-health-services_en). None of these were directly fetchable in this research environment; all are search-engine-synthesized and should be read directly before being relied on for implementation work.*
-
-> ⚠️ **Unverified / conflicting sources**: This diagram compresses and simplifies the real specification (which defines additional detail this documentation did not independently verify, such as the exact Trusted Service List/PKI trust-establishment steps between NCPs, error handling, and audit logging requirements). Treat it as an accurate high-level mental model of the flow, not a substitute for reading the actual epSOS/eHDSI Technical Framework before building against it.
 
 ## Is the gateway layer open to competition?
 
@@ -230,26 +143,6 @@ The near-total reliance on a single market-research firm for EHDS-specific figur
 
 ## Sources
 
-- [noze.it — IPS/MyHealth@EU cross-border insight](https://www.noze.it/en/insights/ips-myhealth-eu-crossborder/)
-- [NCPeH Cyprus — national contact points](https://ncpeh.cy/en/national-contact-points/)
-- [Sundhedsdatastyrelsen/ehdsi — Denmark's NCPeH implementation](https://github.com/Sundhedsdatastyrelsen/ehdsi) (directly fetched)
-- [gematik/api-ncpeh — Germany's NCPeH implementation](https://github.com/gematik/api-ncpeh) (directly fetched)
-- [dzobbe/docker-openncp — dockerized OpenNCP built for the KONFIDO project](https://github.com/dzobbe/docker-openncp) (directly fetched)
-- [OpenNCP Release Notes — CEF Digital wiki](https://ec.europa.eu/cefdigital/wiki/display/EHNCP/OpenNCP+Release+Notes) (search synthesis; domain blocked for direct fetch)
-- [OpenNCP — Connecting Europe Facility (CEF) overview, Confluence](https://openncp.atlassian.net/wiki/spaces/ncp/pages/40828931/Connecting+Europe+Facility+CEF) (search synthesis; domain blocked for direct fetch)
-- [eHDSI / ehealth — official OpenNCP source repository, EU GitLab](https://code.europa.eu/ehdsi/ehealth) (search synthesis; domain blocked for direct fetch)
-- [PubMed — "OpenNCP: a novel framework to foster cross-border e-Health services" (original ~2015 paper, source of the "10 Member States" pilot-era figure)](https://pubmed.ncbi.nlm.nih.gov/25991222/) (search synthesis; not directly fetched)
-- [Springer — KONFIDO: An OpenNCP-Based Secure eHealth Data Exchange System](https://link.springer.com/chapter/10.1007/978-3-319-95189-8_2) (search synthesis; not directly fetched)
-- [European Commission — Electronic cross-border health services](https://health.ec.europa.eu/ehealth-digital-health-and-care/digital-health-and-care/electronic-cross-border-health-services_en) (search synthesis; domain blocked for direct fetch — source for the live-country rollout list)
-- [epSOS specification wiki — National Contact Points](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_National_Contact_Points) (search synthesis; Fraunhofer domain blocked for direct fetch — primary technical source for the NCP-A/NCP-B workflow diagram)
-- [epSOS specification wiki — XCA Profile (Fetch Document)](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_XCA_Profile_(Fetch_Document)) (search synthesis; domain blocked for direct fetch)
-- [epSOS specification wiki — XCA Profile (Retrieve Document)](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_XCA_Profile_(Retrieve_Document)) (search synthesis; domain blocked for direct fetch)
-- [epSOS specification wiki — Informed Consent](https://publicwiki-01.fraunhofer.de/epSOS_specification/index.php/EpSOS_Informed_Consent) (search synthesis; domain blocked for direct fetch)
-- [IHE ITI Technical Framework — Cross-Community Patient Discovery (XCPD)](https://profiles.ihe.net/ITI/TF/Volume1/ch-27.html) (search synthesis; not directly fetched)
-- [IHE ITI Technical Framework — Cross-Community Access (XCA)](https://profiles.ihe.net/ITI/TF/Volume1/ch-18.html) (search synthesis; not directly fetched)
-- [das-e-rezept-fuer-deutschland.de — MyHealth@EU explainer](https://www.das-e-rezept-fuer-deutschland.de/en/advantages/myhealtheu) (search synthesis; domain blocked for direct fetch — plain-English patient-facing overview)
-- [European Commission — electronic cross-border health services](https://health.ec.europa.eu/ehealth-digital-health-and-care/digital-health-and-care/electronic-cross-border-health-services_en)
-- [eHealth Network — guideline on organizational framework for NCPeH (PDF)](https://www.ncpehealth.gr/files/04_guideline_on_an_organizational_framework_for_ncpeh.pdf)
 - [ANS/esante.gouv.fr — NCPeH Sesali](https://ue.esante.gouv.fr/defining-european-ehealth-framework-and-contributing-common-approach/ncpeh-sesali)
 - [NeHA Cyprus — national contact points](https://neha.org.cy/en/national-contact-points/)
 - [PMC — Piloting an infrastructure for secondary use of health data](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12420900/)

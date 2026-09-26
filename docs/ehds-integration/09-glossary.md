@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 9
 sidebar_label: Glossary
 ---
 
@@ -19,9 +19,11 @@ Every acronym and specialist term used across this documentation set, defined in
 
 **EHDS Board** — The EU governance body established by Commission Implementing Regulation (EU) 2026/771 (April 2026) to oversee EHDS implementation. See [02](02-implementation-timeline.md).
 
-**eHDSI** (eHealth Digital Service Infrastructure) — The predecessor name for what is now branded **MyHealth@EU**; you'll still see "eHDSI" in older sources and some technical documentation. See [05](05-gateway-market-and-api-status.md).
+**eHDSI** (eHealth Digital Service Infrastructure) — The predecessor name for what is now branded **MyHealth@EU**; you'll still see "eHDSI" in older sources and some technical documentation. See [07](07-cross-border-exchange.md).
 
-**epSOS** (Smart Open Services for European Patients) — The 2008–2014 EU pilot project that built the first operational cross-border Patient Summary/ePrescription services on HL7 CDA; its output became the technical foundation eHDSI/MyHealth@EU went live with from 2019, and which the live NCPeH network (OpenNCP) still runs on today. See [01](01-legal-and-technical-framework.md), [05](05-gateway-market-and-api-status.md).
+**eHMSEG** (eHealth DSI EU countries Expert Group) — The group of national managers, one nominated per Member State, responsible for implementing and coordinating their country's NCPeH; advises the eHealth Network and the European Commission. See [07](07-cross-border-exchange.md).
+
+**epSOS** (Smart Open Services for European Patients) — The 2008–2014 EU pilot project that built the first operational cross-border Patient Summary/ePrescription services on HL7 CDA; its output became the technical foundation eHDSI/MyHealth@EU went live with from 2019, and which the live NCPeH network (OpenNCP) still runs on today. See [01](01-legal-and-technical-framework.md), [07](07-cross-border-exchange.md).
 
 **GDPR** (General Data Protection Regulation) — The EU's general data protection law. EHDS operates *alongside* GDPR, not instead of it — EHDS's own opt-out right for secondary use is explicitly a separate, distinct right from the GDPR right to object. See [01](01-legal-and-technical-framework.md).
 
@@ -33,11 +35,13 @@ Every acronym and specialist term used across this documentation set, defined in
 
 **MDR** (Medical Device Regulation) — EU regulation for medical devices, used throughout this documentation as the point of comparison for EHDS's lighter-touch, notified-body-free EHR conformity regime. See [01](01-legal-and-technical-framework.md).
 
-**MyHealth@EU** — The EU's cross-border digital health infrastructure for *primary use* (direct patient care) — the successor branding for eHDSI. Architected as one national gateway (NCPeH) per Member State connecting to shared EU central services. See [05](05-gateway-market-and-api-status.md), [06](06-api-drafts-and-specifications.md).
+**MyHealth@EU** — The EU's cross-border digital health infrastructure for *primary use* (direct patient care) — the successor branding for eHDSI. Architected as one national gateway (NCPeH) per Member State connecting to shared EU central services. See [06](06-api-drafts-and-specifications.md), [07](07-cross-border-exchange.md).
 
-**NCP-A / NCP-B** — In the epSOS/eHDSI cross-border workflow, the two NCPeH roles in any given exchange: **NCP-A** is the patient's **country of affiliation** (their home country, which holds the data), **NCP-B** is the **country of treatment** (where the patient currently is). See [05](05-gateway-market-and-api-status.md).
+**NCP API** — The FHIR IG published at `fhir.ehdsi.eu`, specified by the eHDSI programme itself (not EURIDICE), covering the NCPeH-to-NCPeH interface — the in-progress FHIR successor to the live SOAP/XCA cross-border mechanism. See [07](07-cross-border-exchange.md).
 
-**NCPeH** (National Contact Point for eHealth) — The single national gateway each Member State operates to connect its own health system to MyHealth@EU. Finland's NCPeH function is operated by Kela via Kanta. See [03](03-finland.md), [05](05-gateway-market-and-api-status.md), [06](06-api-drafts-and-specifications.md).
+**NCP-A / NCP-B** — In the epSOS/eHDSI cross-border workflow, the two NCPeH roles in any given exchange: **NCP-A** is the patient's **country of affiliation** (their home country, which holds the data), **NCP-B** is the **country of treatment** (where the patient currently is). See [07](07-cross-border-exchange.md).
+
+**NCPeH** (National Contact Point for eHealth) — The single national gateway each Member State operates to connect its own health system to MyHealth@EU. Finland's NCPeH function is operated by Kela via Kanta. See [03](03-finland.md), [06](06-api-drafts-and-specifications.md), [07](07-cross-border-exchange.md).
 
 **Priority category** — One of the specific types of health data EHDS lists in Annex I as subject to mandatory cross-border exchange: patient summaries, ePrescriptions/eDispensations, lab results, medical imaging/reports, and hospital discharge reports. Rolled out in two tranches (2029, 2031). See [02](02-implementation-timeline.md).
 
@@ -49,7 +53,7 @@ Every acronym and specialist term used across this documentation set, defined in
 
 **CEN / CENELEC** (European Committee for Standardization / European Committee for Electrotechnical Standardization) — The EU's formal standardization bodies; CEN/TC 251 is the technical committee for health informatics. No EHDS-specific standardization mandate was confirmed by name in this research. See [05](05-gateway-market-and-api-status.md).
 
-**CDA** (Clinical Document Architecture) — The older HL7 document standard (pre-FHIR) that today's live, operational NCPeH network exchanges Patient Summaries and ePrescriptions in — as opposed to the newer FHIR-based formats described in [06](06-api-drafts-and-specifications.md), which are drafted but not yet live. See [05](05-gateway-market-and-api-status.md).
+**CDA** (Clinical Document Architecture) — The older HL7 document standard (pre-FHIR) that today's live, operational NCPeH network exchanges Patient Summaries and ePrescriptions in — as opposed to the newer FHIR-based formats described in [06](06-api-drafts-and-specifications.md), which are drafted but not yet live. See [07](07-cross-border-exchange.md).
 
 **CI-build** — "Continuous integration build" — the least stable state a FHIR Implementation Guide can be in: the live, unballoted tip of the source repository, not yet through any formal review. Most of the HL7 Europe content IGs are at this stage. See [06](06-api-drafts-and-specifications.md).
 
@@ -85,7 +89,7 @@ Every acronym and specialist term used across this documentation set, defined in
 
 **MADO** (Manifest-based Access to DICOM Objects) — The IHE Radiology profile created specifically because of EHDS's imaging-sharing requirement; a governance/manifest layer sitting on top of DICOMweb's WADO-RS. See [06](06-api-drafts-and-specifications.md).
 
-**OpenNCP** — The European Commission (DG SANTE)-backed open-source reference implementation of the NCPeH, built on SOAP/XCA and CDA (the older generation, predating the new FHIR drafts). Real national NCPeH implementations (e.g. Denmark's, MIT-licensed) are built directly on it. See [05](05-gateway-market-and-api-status.md).
+**OpenNCP** — The European Commission (DG SANTE)-backed open-source reference implementation of the NCPeH, built on SOAP/XCA and CDA (the older generation, predating the new FHIR drafts). Real national NCPeH implementations (e.g. Denmark's, MIT-licensed) are built directly on it. See [07](07-cross-border-exchange.md).
 
 **MHD** (Mobile access to Health Documents) — An IHE profile for document-style query/retrieve over FHIR; the primary pattern the draft EU Health Data API uses for pulling documents like a Patient Summary. See [06](06-api-drafts-and-specifications.md).
 
@@ -105,9 +109,9 @@ Every acronym and specialist term used across this documentation set, defined in
 
 **WADO-RS** (Web Access to DICOM Objects by RESTful Services) — The DICOMweb transaction for retrieving actual image data; still the underlying retrieval mechanism even under the newer MADO profile. See [06](06-api-drafts-and-specifications.md).
 
-**XCA** (Cross-Community Access) — An older IHE profile for querying (transaction **ITI-38**) and retrieving (transaction **ITI-39**) documents across independent "communities" (e.g. regions or countries) that don't share a common patient ID scheme. This is what today's live NCP-to-NCP Patient Summary exchange actually runs on. See [05](05-gateway-market-and-api-status.md), [06](06-api-drafts-and-specifications.md).
+**XCA** (Cross-Community Access) — An older IHE profile for querying (transaction **ITI-38**) and retrieving (transaction **ITI-39**) documents across independent "communities" (e.g. regions or countries) that don't share a common patient ID scheme. This is what today's live NCP-to-NCP Patient Summary exchange actually runs on. See [06](06-api-drafts-and-specifications.md), [07](07-cross-border-exchange.md).
 
-**XCPD** (Cross-Community/Cross-Gateway Patient Discovery) — The IHE profile used by the epSOS **Identification Service** to match a patient's identity across two countries' systems before any data is requested. See [05](05-gateway-market-and-api-status.md).
+**XCPD** (Cross-Community/Cross-Gateway Patient Discovery) — The IHE profile used by the epSOS **Identification Service** to match a patient's identity across two countries' systems before any data is requested. See [07](07-cross-border-exchange.md).
 
 **XDS** (Cross-Enterprise Document Sharing) — An older IHE profile for sharing documents within a single community/region via a shared repository/registry; the architecture pattern Finland's Kanta and similar national systems resemble. See [06](06-api-drafts-and-specifications.md).
 

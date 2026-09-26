@@ -106,6 +106,7 @@ const config = {
               {label: 'Finland', to: '/finland'},
               {label: 'Gateway Market & API Status', to: '/gateway-market-and-api-status'},
               {label: 'API Drafts & Specifications', to: '/api-drafts-and-specifications'},
+              {label: 'Cross-Border Exchange', to: '/cross-border-exchange'},
               {label: 'Glossary', to: '/glossary'},
             ],
           },

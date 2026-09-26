@@ -1,11 +1,11 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 sidebar_label: Recommendations
 ---
 
 # Recommendations for a prospective EHDS gateway/integration vendor
 
-This file translates the findings in the preceding six files into practical guidance for someone evaluating whether to build an EHDS gateway/integration product. It is analysis and synthesis built on the sourced facts documented elsewhere in this folder — it does not introduce new factual claims beyond what is cited in [01](01-legal-and-technical-framework.md)–[06](06-api-drafts-and-specifications.md). Treat this file as a strategic opinion informed by the evidence, not as independently verified fact, and re-read the "Methodology & confidence notes" in the [overview](index.md) before acting on it.
+This file translates the findings in the preceding seven files into practical guidance for someone evaluating whether to build an EHDS gateway/integration product. It is analysis and synthesis built on the sourced facts documented elsewhere in this folder — it does not introduce new factual claims beyond what is cited in [01](01-legal-and-technical-framework.md)–[07](07-cross-border-exchange.md). Treat this file as a strategic opinion informed by the evidence, not as independently verified fact, and re-read the "Methodology & confidence notes" in the [overview](index.md) before acting on it.
 
 ## Market timing view
 
@@ -36,6 +36,7 @@ Based on the comparative picture in [03-finland.md](03-finland.md) and [04-other
 
 - **Track the Commission's Annex II "common specifications" implementing act**, due by statute on 26 March 2027 (Article 36). This is the single highest-leverage date to watch — it is the legal trigger that converts today's draft/trial-use technical material into a binding target. See [02-implementation-timeline.md](02-implementation-timeline.md).
 - **Track HL7 Europe's FHIR Implementation Guide releases** (Base, Core, Extensions, and the Patient Summary and Medication Prescription and Dispense IGs) for progression beyond "Standard for Trial Use" status, and monitor the joint **IHE Europe/HL7 Europe "EURIDICE"** initiative for new joint specifications — these are the leading technical candidates likely to inform the eventual common specifications. See [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md) for the current draft IGs, their GitHub repos, ballot status, and concrete examples.
+- **Track the `fhir.ehdsi.eu` "NCP API" FHIR IG** — the European Commission's own in-progress FHIR successor to the live epSOS/eHDSI cross-border mechanism, specified separately from EURIDICE. This is the layer that determines when cross-border Patient Summary/ePrescription exchange itself moves off CDA — a different and, on current evidence, more operationally consequential signal than the EURIDICE ballot progress. See [07-cross-border-exchange.md](07-cross-border-exchange.md).
 - **Watch for a CEN/CENELEC standardization request/mandate explicitly tied to Regulation (EU) 2025/327.** The underlying research found no such mandate confirmed by name (only CEN/TC 251's general health-informatics remit) — its appearance (or continued absence) is a signal of how the formal European standardization system is being brought into the EHDS process.
 - **Monitor the EU database for EHR system registration** (per Article 38) once it is operational — this is expected to be the authoritative public list of which EHR systems have completed conformity self-certification, and can double as market-intelligence on which vendors are actually compliant, country by country.
 - **Track national implementing legislation directly** rather than relying on secondary commentary: Finland's STM consultation and Secondary Use Act reform; Germany's GeDIG passage; the Netherlands' Wgis/GDA bill following its July 2026 consultation close; France's expected 2026 transposition bill. Several of these were still pending as of the underlying research and their outcomes will determine the actual national buyer and procurement route in each country.
@@ -44,4 +45,4 @@ Based on the comparative picture in [03-finland.md](03-finland.md) and [04-other
 
 ## Sources
 
-This file synthesizes facts already sourced in [01-legal-and-technical-framework.md](01-legal-and-technical-framework.md), [02-implementation-timeline.md](02-implementation-timeline.md), [03-finland.md](03-finland.md), [04-other-member-states.md](04-other-member-states.md), [05-gateway-market-and-api-status.md](05-gateway-market-and-api-status.md), and [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md); see those files for the full list of underlying source links. No new sources are introduced in this file.
+This file synthesizes facts already sourced in [01-legal-and-technical-framework.md](01-legal-and-technical-framework.md), [02-implementation-timeline.md](02-implementation-timeline.md), [03-finland.md](03-finland.md), [04-other-member-states.md](04-other-member-states.md), [05-gateway-market-and-api-status.md](05-gateway-market-and-api-status.md), [06-api-drafts-and-specifications.md](06-api-drafts-and-specifications.md), and [07-cross-border-exchange.md](07-cross-border-exchange.md); see those files for the full list of underlying source links. No new sources are introduced in this file.

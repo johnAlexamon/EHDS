@@ -7,7 +7,7 @@ sidebar_label: API Drafts & Specifications
 
 The other files in this folder describe the EEHRxF as "not yet formally established" in the abstract. This file goes one level deeper: it identifies the actual draft technical artifacts being built right now, who is building them, what state they are in, and — because that's genuinely useful for evaluating build risk — what the draft resources and APIs concretely look like.
 
-*This is the most acronym-dense file in the set — unfamiliar terms (MADO, MHD, PDQm, IPA, FSH, STU, etc.) are all defined in the [glossary](08-glossary.md).*
+*This is the most acronym-dense file in the set — unfamiliar terms (MADO, MHD, PDQm, IPA, FSH, STU, etc.) are all defined in the [glossary](09-glossary.md).*
 
 > **Methodology note, different from the other files in this folder**: most of this file's sourcing comes from directly reading the public GitHub repositories (`github.com/hl7-eu/*`, `github.com/euridice-org/*`) and their raw source files (`raw.githubusercontent.com`), which **were** reachable in this research environment — unlike EUR-Lex, `build.fhir.org`, `euridice.org`, `ihe.net` and most other primary sources, which were blocked by the network egress proxy (same limitation documented in the [overview](index.md)). That means the package IDs, version numbers, dependency lists, and FSH (FHIR Shorthand) source code quoted below are read directly from the authoritative source repositories, not search-engine synthesis — higher confidence than most of the rest of this documentation set. Where a claim instead relies on search-engine synthesis (e.g. the MADO/DICOMweb relationship, the ballot timeline), that is flagged explicitly.
 
@@ -27,7 +27,7 @@ There are three layers of draft/live specification in play, plus one specialized
 flowchart TD
     L1["<b>Layer 1 — Content</b><br/>what the data looks like<br/><br/>HL7 Europe content IGs (FHIR)<br/><i>draft / CI-build</i>"]
     L2["<b>Layer 2 — National transport</b><br/>EHR to national gateway<br/><br/>draft EU Health Data API<br/><i>draft / STU1 ballot</i>"]
-    L3["<b>Layer 3 — Cross-border transport</b><br/>gateway to gateway<br/><br/>NCPeH-to-NCPeH over MyHealth@EU<br/><i>LIVE — epSOS/eHDSI generation</i>"]
+    L3["<b>Layer 3 — Cross-border transport</b><br/>gateway to gateway<br/><br/>NCPeH-to-NCPeH over MyHealth@EU<br/><i>LIVE (epSOS/eHDSI) + FHIR successor in progress</i>"]
     MADO["<b>Imaging pixel data</b><br/>a parallel track, not a 4th layer<br/><br/>MADO over DICOMweb's WADO-RS"]
 
     L1 --> L2 --> L3
@@ -35,7 +35,7 @@ flowchart TD
     MADO -.cross-border via XC-WADO.-> L3
 ```
 
-*This diagram is this documentation's own synthesis of the layer structure described throughout this file — it is not a published EU diagram. Layer 3 is the only one already live today, on the older epSOS/eHDSI generation rather than FHIR — see [05-gateway-market-and-api-status.md](05-gateway-market-and-api-status.md) for the detailed sequence diagram of exactly how it works. The tables and prose above and below give the full detail (package IDs, versions, dependencies) each box here summarizes.*
+*This diagram is this documentation's own synthesis of the layer structure described throughout this file — it is not a published EU diagram. Layer 3 is the only one already live today, on the older epSOS/eHDSI generation rather than FHIR, with a FHIR-based successor already in active development — see [07-cross-border-exchange.md](07-cross-border-exchange.md) for the detailed workflow diagram, the live open-source implementation, and who is specifying the FHIR migration. The tables and prose above and below give the full detail (package IDs, versions, dependencies) each box here summarizes.*
 
 ## The content Implementation Guides (what the clinical data looks like)
 
@@ -97,45 +97,9 @@ This is genuinely the single most consequential open design question for a vendo
 
 So: **it is not "vendors will/won't implement the API" — it's a per-country architecture decision, and the answer is already visibly different across the countries this documentation covers.** In a Pattern 1 country, Dedalus (or any HIS vendor) would mainly need to add a document-publish capability pointed at the national repository — the "wrapper" the question asks about is exactly the national gateway acting as Access Provider on the vendor's behalf. In a Pattern 2 country, the vendor is the wrapper — there is no intermediary insulating them from the API's technical requirements.
 
-**Cross-border (Layer 3) is a separate layer again**, per the [layer diagram above](#who-is-actually-drafting-these-specs). Per [`usecase-cross-border-ncp.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/usecase-cross-border-ncp.md) in the same repo: this IG **only** specifies Layer 2, the national leg (EHR system ↔ national infrastructure). The country-to-country leg — one country's NCPeH querying another country's NCPeH over MyHealth@EU — is explicitly called out as **"governed separately by the NCPeH API specification,"** which this research did not find published as its own EURIDICE FHIR IG (it may still be the older eHDSI/OpenNCP SOAP-based mechanism — see [05-gateway-market-and-api-status.md](05-gateway-market-and-api-status.md) for how that live mechanism actually works — or an as-yet-unpublished FHIR draft; flagged here as an open gap, not a confirmed fact either way).
+**Cross-border (Layer 3) is a separate layer again**, per the [layer diagram above](#who-is-actually-drafting-these-specs). Per [`usecase-cross-border-ncp.md`](https://github.com/euridice-org/eu-health-data-api/blob/main/input/pagecontent/usecase-cross-border-ncp.md) in the same repo: this IG **only** specifies Layer 2, the national leg (EHR system ↔ national infrastructure). The country-to-country leg — one country's NCPeH querying another country's NCPeH over MyHealth@EU — is explicitly called out as **"governed separately by the NCPeH API specification."** Cross-border exchange has enough depth (a live, open-source implementation today; an in-progress FHIR successor; the actual workflow mechanics; who specifies the FHIR migration) that it has **its own dedicated chapter: [07-cross-border-exchange.md](07-cross-border-exchange.md)**.
 
 > ⚠️ **Unverified / conflicting sources**: These quotes and architectural patterns are read directly from the IG's own GitHub source (`raw.githubusercontent.com`), which is higher-confidence than most of this documentation set — but the rendered/build version of the IG (`build.fhir.org`, `hl7.eu/fhir`) could not be directly fetched to cross-check formatting or see if this page has since been revised. The claim that Finland/Austria/Denmark/France/Estonia specifically use "Pattern 1" is this document's own inference from the general "existing national XDS/XCA deployments" description plus the country profiles in [04-other-member-states.md](04-other-member-states.md) — the source text names the pattern-category, not those specific five countries by name.
-
-### What a three-country cross-border pull looks like end to end
-
-Putting the national-leg pattern and the cross-border leg together, here is what it looks like for a clinician in one country to pull a patient's history from **two** other countries at once — for example, a mobile EU citizen who presents at a Finnish hospital with a documented care history in both Germany and France:
-
-```mermaid
-sequenceDiagram
-    participant EHR as Hospital EHR<br/>(Finland)
-    participant FINCP as Finland national gateway<br/>+ NCPeH (Kanta)
-    participant EU as MyHealth@EU<br/>(EU central services)
-    participant DENCP as Germany NCPeH
-    participant DEInfra as Germany national<br/>infra / hospital EHR
-    participant FRNCP as France NCPeH
-    participant FRInfra as France national<br/>infra / hospital EHR
-
-    EHR->>FINCP: Request patient data<br/>(EU Health Data API, national leg)
-    Note over FINCP,EU: Cross-border leg: NCPeH-to-NCPeH<br/>("governed separately", not this IG)
-    FINCP->>EU: Cross-border query (patient identity + consent)
-    par Query Germany
-        EU->>DENCP: Forward query
-        DENCP->>DEInfra: Query per Germany's own<br/>Pattern 1 or 2 choice
-        DEInfra-->>DENCP: EEHRxF data (DE)
-        DENCP-->>EU: Response (DE)
-    and Query France
-        EU->>FRNCP: Forward query
-        FRNCP->>FRInfra: Query per France's own<br/>Pattern 1 or 2 choice
-        FRInfra-->>FRNCP: EEHRxF data (FR)
-        FRNCP-->>EU: Response (FR)
-    end
-    EU-->>FINCP: Aggregated responses (DE + FR)
-    FINCP-->>EHR: Combined patient summary<br/>for the clinician
-```
-
-*This diagram is this documentation's own illustration of how the two confirmed architectural layers (national-leg API + NCPeH cross-border layer) would compose for a two-country pull — it is not copied from a published EU diagram. Today's live MyHealth@EU primary-use flow typically queries **one** country at a time (the patient's declared country of affiliation for that episode of care); a simultaneous two-country query as drawn here is technically consistent with the federated architecture but was not found documented as an existing product feature in any source reviewed — treat the parallel `par...and...end` branch as an architectural possibility, not a confirmed live capability.*
-
-Two things worth noting in this diagram: first, **Germany and France can each independently be "Pattern 1" or "Pattern 2" internally** — the requesting country (Finland) never needs to know or care, because that choice is hidden behind each country's own NCPeH; the NCPeH-to-NCPeH contract is the only interoperability surface that has to be EU-wide. Second, this is exactly why the "gateway" market question from [05-gateway-market-and-api-status.md](05-gateway-market-and-api-status.md) matters commercially: in a Pattern-1 country the national gateway operator captures nearly all of the EHDS-specific integration work, while in a Pattern-2 country that work (and spend) is distributed across every individual HIS/EHR vendor instead.
 
 ## Imaging specifically: MADO, and how it relates to DICOMweb
 
